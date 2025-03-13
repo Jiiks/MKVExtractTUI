@@ -216,7 +216,7 @@ void guiMainUpdateMain() {
     wclear(ctx.mainPad);
     if(fi->trackCount == 0) {
         mvwprintw(ctx.mainPad, 0, 0, "Loading tracks...");
-        prefresh(ctx.mainPad, 0, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 1);
+        prefresh(ctx.mainPad, ctx.mainPadPos, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 1);
  
         cJSON *json = fsGetTracksJson(fi);
         cJSON *tracks = cJSON_GetObjectItemCaseSensitive(json, "tracks");
@@ -263,7 +263,7 @@ void guiMainUpdateMain() {
             wattroff(ctx.mainPad, A_BOLD | A_STANDOUT);
         }
     }
-    prefresh(ctx.mainPad, 0, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 5);
+    prefresh(ctx.mainPad, ctx.mainPadPos, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 5);
 }
 
 void guiSidebarSelect(int dir) {
@@ -290,7 +290,7 @@ void guiSidebarSelect(int dir) {
     if (dir == 1 && ctx.sidebarIdx - ctx.sidebarPadPos >= maxIndex) {
         ctx.sidebarPadPos++;
     }
-    if (dir == 1 && ctx.sidebarIdx + 1 <= ctx.sidebarPadPos) {
+    if (dir == -1 && ctx.sidebarIdx + 1 <= ctx.sidebarPadPos) {
         ctx.sidebarPadPos--;
     }
 
@@ -301,6 +301,38 @@ void guiSidebarSelect(int dir) {
     if (ctx.sidebarPadPos > count - ctx.sidebarMaxY + 2) ctx.sidebarPadPos = count - ctx.sidebarMaxY + 2;
 
     guiMainUpdateSideBar();
+    //guiMainUpdateMain();
+}
+
+void guiMainSelect(int dir) {
+    FileInfo *fi = &ctx.fileList->files[ctx.sidebarIdx];
+
+    int count = fi->trackCount;
+    if(count <= 0) {
+        guiMainUpdate();
+        return;
+    }
+
+    if (dir == -1) {
+        ctx.mainIdx = (ctx.mainIdx - 1 + count) % count;
+    } else {
+        ctx.mainIdx = (ctx.mainIdx + 1) % count;
+    }
+
+    int maxIndex = ctx.mainMaxY - 2;
+    if (dir == 1 && ctx.mainIdx - ctx.mainPadPos >= maxIndex) {
+        ctx.mainPadPos++;
+    }
+    if (dir == -1 && ctx.mainIdx + 1 <= ctx.mainPadPos) {
+        ctx.mainPadPos--;
+    }
+
+    if (ctx.mainIdx == 0) ctx.mainPadPos = 0;
+    if (ctx.mainIdx+ 1 >= count) ctx.mainPadPos = count - 1;
+
+    if (ctx.mainPadPos < 0) ctx.mainPadPos = 0;  
+    if (ctx.mainPadPos > count - ctx.mainMaxY + 2) ctx.mainPadPos = count - ctx.mainMaxY + 2;
+
     guiMainUpdateMain();
 }
 
