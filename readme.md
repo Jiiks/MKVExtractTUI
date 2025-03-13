@@ -27,6 +27,9 @@ Custom input directory:
 `mkvextracttui -i "path"`
 otherwise current working directory is used.
 
+also can be run guiless with either `guiless=true` in config or `-nogui`
+When done so all subtitles that are configured to be auto checked will be extracted automatically.
+
 Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/MkvExtractTUI`
 
 ## Dependencies
