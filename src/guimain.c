@@ -193,6 +193,7 @@ void guiMainUpdateSideBar() {
     }
 
     prefresh(ctx.sidebarPad, ctx.sidebarPadPos, 0, 2, 1, maxIndex + 1, ctx.sidebarMaxX - 2);
+    guiMainUpdateMain();
 }
 
 void displayFlags(const char *input, char *output) {
