@@ -25,6 +25,7 @@ typedef struct {
     Track *tracks;
     int trackCount;
     int lt;
+    int selectedIndex;
 } FileInfo;
 
 /// @brief A list of files. Make sure to call fsFreeList after.

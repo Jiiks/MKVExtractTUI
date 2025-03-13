@@ -258,7 +258,7 @@ void guiMainUpdateMain() {
             char df[256];
             displayFlags(track.Flags, df);
      
-            if(i == ctx.mainIdx) wattron(ctx.mainPad, A_BOLD | A_STANDOUT);
+            if(i == fi->selectedIndex) wattron(ctx.mainPad, A_BOLD | A_STANDOUT);
             mvwprintw(ctx.mainPad, i, 0, "[%c] #%d [%s] (%s) %*s => %s",
                 track.Extract ? 'x' : ' ',
                 track.Idx,
@@ -321,21 +321,21 @@ void guiMainSelect(int dir) {
     }
 
     if (dir == -1) {
-        ctx.mainIdx = (ctx.mainIdx - 1 + count) % count;
+        fi->selectedIndex = (fi->selectedIndex - 1 + count) % count;
     } else {
-        ctx.mainIdx = (ctx.mainIdx + 1) % count;
+        fi->selectedIndex = (fi->selectedIndex + 1) % count;
     }
 
     int maxIndex = ctx.mainMaxY - 2;
-    if (dir == 1 && ctx.mainIdx - ctx.mainPadPos >= maxIndex) {
+    if (dir == 1 && fi->selectedIndex - ctx.mainPadPos >= maxIndex) {
         ctx.mainPadPos++;
     }
-    if (dir == -1 && ctx.mainIdx + 1 <= ctx.mainPadPos) {
+    if (dir == -1 && fi->selectedIndex + 1 <= ctx.mainPadPos) {
         ctx.mainPadPos--;
     }
 
-    if (ctx.mainIdx == 0) ctx.mainPadPos = 0;
-    if (ctx.mainIdx+ 1 >= count) ctx.mainPadPos = count - 1;
+    if (fi->selectedIndex == 0) ctx.mainPadPos = 0;
+    if (fi->selectedIndex + 1 >= count) ctx.mainPadPos = count - 1;
 
     if (ctx.mainPadPos < 0) ctx.mainPadPos = 0;  
     if (ctx.mainPadPos > count - ctx.mainMaxY + 2) ctx.mainPadPos = count - ctx.mainMaxY + 2;
