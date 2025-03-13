@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     }
 
     fsSortList(&fl);
-    int fileCount = fl.size;
+    //int fileCount = fl.size;
 
     guiMainInit(title, &fl);
     guiMainUpdate();
@@ -77,6 +77,12 @@ int main(int argc, char *argv[]) {
         }
         if(ch == KEY_HOME) {
             guiSidebarSelect(0);
+        }
+        if(ch == KEY_UP) {
+            guiMainSelect(-1);
+        }
+        if(ch == KEY_DOWN) {
+            guiMainSelect(1);
         }
     }
     fsCleanup();

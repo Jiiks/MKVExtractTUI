@@ -64,7 +64,6 @@ void resolveDimensions(int *row, int *col, int *sidebarWidth, int *mainAreaWidth
     ctx.mainMaxY = *row - BOTTOM_PAD;
 }
 
-// TODO main pad doesn't resize
 void handleResize(int sig) {
     endwin();
     refresh();
@@ -72,6 +71,10 @@ void handleResize(int sig) {
 
     int row, col, sidebarWidth, mainAreaWidth;
     resolveDimensions(&row, &col, &sidebarWidth, &mainAreaWidth);
+    ctx.sidebarWidth = sidebarWidth;
+    ctx.mainAreaWidth = mainAreaWidth;
+    ctx.row = row;
+    ctx.col = col;
 
     // Resize the windows
     wresize(ctx.sidebar, row - BOTTOM_PAD, sidebarWidth);
@@ -83,9 +86,12 @@ void handleResize(int sig) {
 
     // Add some size if no files so we can print some error message.
     wresize(ctx.sidebarPad, ctx.fileList->size == 0 ? 20 : ctx.fileList->size, sidebarWidth);
+    FileInfo *file = &ctx.fileList->files[ctx.sidebarIdx];
+    wresize(ctx.mainPad, file->trackCount == 0 ? 20 : file->trackCount, mainAreaWidth);
 
     wclear(ctx.sidebarPad);
     wclear(ctx.sidebar);
+    wclear(ctx.mainPad);
     wclear(ctx.main);
     wclear(ctx.footer);
 
@@ -129,7 +135,7 @@ void guiMainInit(const char *title, FileList *fileList) {
     // Add some size if no files so we can print some error message.
     ctx.sidebarPad = newpad(fileList->size == 0 ? 20 : fileList->size, sidebarWidth);
 
-   ctx.main = newwin(row - BOTTOM_PAD, mainAreaWidth, 1, sidebarWidth);
+    ctx.main = newwin(row - BOTTOM_PAD, mainAreaWidth, 1, sidebarWidth);
 
     ctx.mainPad = newpad(40, mainAreaWidth);
 
@@ -187,6 +193,7 @@ void guiMainUpdateSideBar() {
     }
 
     prefresh(ctx.sidebarPad, ctx.sidebarPadPos, 0, 2, 1, maxIndex + 1, ctx.sidebarMaxX - 2);
+    guiMainUpdateMain();
 }
 
 void displayFlags(const char *input, char *output) {
@@ -216,7 +223,7 @@ void guiMainUpdateMain() {
     wclear(ctx.mainPad);
     if(fi->trackCount == 0) {
         mvwprintw(ctx.mainPad, 0, 0, "Loading tracks...");
-        prefresh(ctx.mainPad, 0, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 1);
+        prefresh(ctx.mainPad, ctx.mainPadPos, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 1);
  
         cJSON *json = fsGetTracksJson(fi);
         cJSON *tracks = cJSON_GetObjectItemCaseSensitive(json, "tracks");
@@ -251,19 +258,19 @@ void guiMainUpdateMain() {
             char df[256];
             displayFlags(track.Flags, df);
      
-            if(i == ctx.mainIdx) wattron(ctx.mainPad, A_BOLD | A_STANDOUT);
+            if(i == fi->selectedIndex) wattron(ctx.mainPad, A_BOLD | A_STANDOUT);
             mvwprintw(ctx.mainPad, i, 0, "[%c] #%d [%s] (%s) %*s => %s",
                 track.Extract ? 'x' : ' ',
                 track.Idx,
                 track.Language,
                 df,
-                fi->lt - strlen(df), " ",
+                fi->lt - (int)strlen(df), " ",
                 newName
             );
             wattroff(ctx.mainPad, A_BOLD | A_STANDOUT);
         }
     }
-    prefresh(ctx.mainPad, 0, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 5);
+    prefresh(ctx.mainPad, ctx.mainPadPos, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 5);
 }
 
 void guiSidebarSelect(int dir) {
@@ -290,7 +297,7 @@ void guiSidebarSelect(int dir) {
     if (dir == 1 && ctx.sidebarIdx - ctx.sidebarPadPos >= maxIndex) {
         ctx.sidebarPadPos++;
     }
-    if (dir == 1 && ctx.sidebarIdx + 1 <= ctx.sidebarPadPos) {
+    if (dir == -1 && ctx.sidebarIdx + 1 <= ctx.sidebarPadPos) {
         ctx.sidebarPadPos--;
     }
 
@@ -301,6 +308,38 @@ void guiSidebarSelect(int dir) {
     if (ctx.sidebarPadPos > count - ctx.sidebarMaxY + 2) ctx.sidebarPadPos = count - ctx.sidebarMaxY + 2;
 
     guiMainUpdateSideBar();
+    //guiMainUpdateMain();
+}
+
+void guiMainSelect(int dir) {
+    FileInfo *fi = &ctx.fileList->files[ctx.sidebarIdx];
+
+    int count = fi->trackCount;
+    if(count <= 0) {
+        guiMainUpdate();
+        return;
+    }
+
+    if (dir == -1) {
+        fi->selectedIndex = (fi->selectedIndex - 1 + count) % count;
+    } else {
+        fi->selectedIndex = (fi->selectedIndex + 1) % count;
+    }
+
+    int maxIndex = ctx.mainMaxY - 2;
+    if (dir == 1 && fi->selectedIndex - ctx.mainPadPos >= maxIndex) {
+        ctx.mainPadPos++;
+    }
+    if (dir == -1 && fi->selectedIndex + 1 <= ctx.mainPadPos) {
+        ctx.mainPadPos--;
+    }
+
+    if (fi->selectedIndex == 0) ctx.mainPadPos = 0;
+    if (fi->selectedIndex + 1 >= count) ctx.mainPadPos = count - 1;
+
+    if (ctx.mainPadPos < 0) ctx.mainPadPos = 0;  
+    if (ctx.mainPadPos > count - ctx.mainMaxY + 2) ctx.mainPadPos = count - ctx.mainMaxY + 2;
+
     guiMainUpdateMain();
 }
 

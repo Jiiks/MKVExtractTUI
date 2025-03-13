@@ -7,6 +7,7 @@
 #include "track.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // TODO missing some codecs
 const char *trackCodecNames[5] = {

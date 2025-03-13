@@ -23,9 +23,16 @@ void guiMainUpdate();
 /// @brief Sidebar update
 void guiMainUpdateSideBar();
 
+/// @brief Main area update
+void guiMainUpdateMain();
+
 /// @brief Select next/previous index in sidebar
 /// @param dir Up = -1, Down = 1
 void guiSidebarSelect(int dir);
+
+/// @brief Select next/previous index in main area
+/// @param dir Up = -1, Down = 1
+void guiMainSelect(int dir);
 
 /// @brief Get the current sidebar selected item index
 /// @return Sidebar selected index

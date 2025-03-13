@@ -11,13 +11,13 @@ Mkv(Sub)ExtractTUI is a terminal-based user interface for extracting subtitles f
 
 ## Features
 
--  **Terminal UI:** Easy navigation and control for users who prefer working in the terminal.
+- **Terminal UI:** Easy navigation and control for users who prefer working in the terminal.
 
--  **Track Information:** View detailed information about each track, including track index, language, codec, and more.
+- **Track Information:** View detailed information about each track, including track index, language, codec, and more.
 
--  **Custom Naming:** Customize the output file names based on track properties.
+- **Custom Naming:** Customize the output file names based on track properties.
 
--  **Multi-Track Support:** Extract multiple subtitle tracks simultaneously.
+- **Multi-Track Support:** Extract multiple subtitle tracks simultaneously.
 
 ## Usage
 Download from releases as binary.(none yet)  
@@ -34,9 +34,9 @@ Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/Mkv
 
 ## Dependencies
 
--   `ncurses`: Library for creating terminal-based user interfaces.
+- `ncurses`: Library for creating terminal-based user interfaces.
     
--   `mkvtoolnix`: Set of tools to create, alter, and inspect Matroska files.
+- `mkvtoolnix`: Set of tools to create, alter, and inspect Matroska files.
 
 You can install the dependencies using your package manager. For example, on Debian-based systems:
 
@@ -49,9 +49,10 @@ sudo apt-get install ncurses mkvtoolnix
 Clone the repository and build the project:
 
 ```bash
-git  clone  https://github.com/Jiiks/MkvExtractTUI.git
-cd  mkvextracttui
-make  build || make  bar (build and  run)
+git clone https://github.com/Jiiks/MkvExtractTUI.git
+cd MKVExtractTUI
+make build
+make bar #(build and run)
 ```
 
 ## Contributing

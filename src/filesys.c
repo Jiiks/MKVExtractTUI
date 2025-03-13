@@ -114,6 +114,7 @@ void fsAddFile(FileList *list, const char *name, const char *path) {
     FileInfo *last = &list->files[list->size];
     last->trackCount = 0;
     last->lt = 0;
+    last->selectedIndex = 0;
 
     last->name = strdup(name);
     last->path = strdup(path);
