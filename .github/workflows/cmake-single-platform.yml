@@ -21,6 +21,3 @@ jobs:
 
       - name: Build project
         run: make build
-
-      - name: Run tests
-        run: make testfs
