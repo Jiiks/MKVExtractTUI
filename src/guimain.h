@@ -23,6 +23,9 @@ void guiMainUpdate();
 /// @brief Sidebar update
 void guiMainUpdateSideBar();
 
+/// @brief Main area update
+void guiMainUpdateMain();
+
 /// @brief Select next/previous index in sidebar
 /// @param dir Up = -1, Down = 1
 void guiSidebarSelect(int dir);

@@ -64,7 +64,6 @@ void resolveDimensions(int *row, int *col, int *sidebarWidth, int *mainAreaWidth
     ctx.mainMaxY = *row - BOTTOM_PAD;
 }
 
-// TODO main pad doesn't resize
 void handleResize(int sig) {
     endwin();
     refresh();
@@ -72,6 +71,10 @@ void handleResize(int sig) {
 
     int row, col, sidebarWidth, mainAreaWidth;
     resolveDimensions(&row, &col, &sidebarWidth, &mainAreaWidth);
+    ctx.sidebarWidth = sidebarWidth;
+    ctx.mainAreaWidth = mainAreaWidth;
+    ctx.row = row;
+    ctx.col = col;
 
     // Resize the windows
     wresize(ctx.sidebar, row - BOTTOM_PAD, sidebarWidth);
@@ -83,9 +86,12 @@ void handleResize(int sig) {
 
     // Add some size if no files so we can print some error message.
     wresize(ctx.sidebarPad, ctx.fileList->size == 0 ? 20 : ctx.fileList->size, sidebarWidth);
+    FileInfo *file = &ctx.fileList->files[ctx.sidebarIdx];
+    wresize(ctx.mainPad, file->trackCount == 0 ? 20 : file->trackCount, mainAreaWidth);
 
     wclear(ctx.sidebarPad);
     wclear(ctx.sidebar);
+    wclear(ctx.mainPad);
     wclear(ctx.main);
     wclear(ctx.footer);
 
@@ -129,7 +135,7 @@ void guiMainInit(const char *title, FileList *fileList) {
     // Add some size if no files so we can print some error message.
     ctx.sidebarPad = newpad(fileList->size == 0 ? 20 : fileList->size, sidebarWidth);
 
-   ctx.main = newwin(row - BOTTOM_PAD, mainAreaWidth, 1, sidebarWidth);
+    ctx.main = newwin(row - BOTTOM_PAD, mainAreaWidth, 1, sidebarWidth);
 
     ctx.mainPad = newpad(40, mainAreaWidth);
 
@@ -257,7 +263,7 @@ void guiMainUpdateMain() {
                 track.Idx,
                 track.Language,
                 df,
-                fi->lt - strlen(df), " ",
+                fi->lt - (int)strlen(df), " ",
                 newName
             );
             wattroff(ctx.mainPad, A_BOLD | A_STANDOUT);

@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     }
 
     fsSortList(&fl);
-    int fileCount = fl.size;
+    //int fileCount = fl.size;
 
     guiMainInit(title, &fl);
     guiMainUpdate();
