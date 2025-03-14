@@ -49,6 +49,7 @@ TESTOBJ = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(TESTSRC))
 
 TEST_FS = testfs
 TEST_JSON = testjson
+TEST_EXTRACT = testextract
 
 testfs: $(TESTOBJ) $(OBJDIR)/$(TEST_FS).o
 	$(CC) -o $(BINDIR)/$(TEST_FS) $(TESTOBJ) $(OBJDIR)/$(TEST_FS).o $(CFLAGS)
@@ -67,3 +68,10 @@ testjson: $(TESTOBJ) $(OBJDIR)/$(TEST_JSON).o
 
 $(OBJDIR)/$(TEST_JSON).o: $(TESTDIR)/$(TEST_JSON).c
 	$(CC) -c $(TESTDIR)/$(TEST_JSON).c -o $(OBJDIR)/$(TEST_JSON).o 
+
+testextract: $(TESTOBJ) $(OBJDIR)/$(testextract).o
+	$(CC) -o $(BINDIR)/$(testextract) $(TESTOBJ) $(OBJDIR)/$(testextract).o $(CFLAGS)
+	$(BINDIR)/$(testextract) $(TEST_PATH) ".mkv"
+
+$(OBJDIR)/$(testextract).o: $(TESTDIR)/$(testextract).c
+	$(CC) -c $(TESTDIR)/$(testextract).c -o $(OBJDIR)/$(testextract).o 
