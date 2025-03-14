@@ -94,6 +94,10 @@ int main(int argc, char *argv[]) {
             case 'd':
                 guiMainCheck(-1);
                 break;
+            case KEY_ENTER:
+            case 10:
+                // Extract
+                break;
         }
 
     }

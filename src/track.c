@@ -42,8 +42,13 @@ void appendFlag(char *flags, const char *append, size_t size) {
     }
 }
 
-// TODO We're still missing commentary and cc tags
-// TODO don't malloc track
+/// @brief Checks if track should be auto checked based on language configs.
+/// @param track Track to check
+void trackAutoCheck(Track *track) {
+    // Default config = en,eng
+    if(strstr(track->Language, "eng")) track->Extract = true;
+}
+
 Track trackParseJson(cJSON *json) {
     Track track;
     track.IsSubTrack = true;
@@ -115,7 +120,7 @@ Track trackParseJson(cJSON *json) {
 
     strcpy(track.Extension, trackGetCodecName(track.Codec));
     track.Extension[sizeof(track.Extension) - 1] = '\0';
-
+    trackAutoCheck(&track);
     return track;
 }
 
