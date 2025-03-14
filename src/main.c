@@ -86,7 +86,13 @@ int main(int argc, char *argv[]) {
                 guiMainSelect(1);
                 break;
             case ' ':
-                guiMainCheck();
+                guiMainCheck(0);
+                break;
+            case 'a':
+                guiMainCheck(1);
+                break;
+            case 'd':
+                guiMainCheck(-1);
                 break;
         }
 

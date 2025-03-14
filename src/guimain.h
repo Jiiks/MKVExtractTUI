@@ -43,6 +43,6 @@ int guiGetSidebarIndex();
 int guiGetMainIndex();
 
 /// @brief Check selected track
-void guiMainCheck();
+void guiMainCheck(int mode);
 
 #endif // GUIMAIN_H

@@ -355,9 +355,25 @@ void guiMainSelect(int dir) {
     guiMainUpdateMain();
 }
 
-void guiMainCheck() {
+void guiMainCheck(int mode) {
     FileInfo *fi = &ctx.fileList->files[ctx.sidebarIdx];
-    fi->tracks[fi->selectedIndex].Extract = !fi->tracks[fi->selectedIndex].Extract;
+    switch(mode) {
+        case 0:
+            fi->tracks[fi->selectedIndex].Extract = !fi->tracks[fi->selectedIndex].Extract;
+            break;
+        case -1:
+            for(int i = 0 ; i < fi->trackCount ; i++) {
+                fi->tracks[i].Extract = false;
+            }
+            break;
+        case 1:
+            for(int i = 0 ; i < fi->trackCount ; i++) {
+                fi->tracks[i].Extract = true;
+            }
+            break;
+
+    }
+
     guiMainUpdateMain();
 }
 
