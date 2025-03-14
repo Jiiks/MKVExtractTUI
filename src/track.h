@@ -54,7 +54,7 @@ void trackResolveNewName(const char *fileName, Track *track, char *out);
 /// @brief Parses track json
 /// @param json Track json string
 /// @return Parse json as track
-Track *trackParseJson(cJSON *json);
+Track trackParseJson(cJSON *json);
 /// @brief Debug print track 
 /// @param track Track
 void trackPrintDbg(const Track *track);

@@ -252,8 +252,8 @@ void guiMainUpdateMain() {
             cJSON *type = cJSON_GetObjectItemCaseSensitive(track, "type");
             // Ignore non sub tracks since we don't currently care about those
             if(strstr(type->valuestring, "subtitles") == NULL) continue;
-            Track *parsedTrack = trackParseJson(track);
-            fsAddTrack(fi, parsedTrack, row);
+            Track parsedTrack = trackParseJson(track);
+            fsAddTrack(fi, &parsedTrack, row);
             row += 1;
         }
         cJSON_Delete(json);
