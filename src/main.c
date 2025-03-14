@@ -54,8 +54,21 @@ int argHandler(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-    if(argc > 1 && argHandler(argc, argv) == 0) return 0; 
-    if(!cfgInit()) return 0;
+    if(argc > 1 && argHandler(argc, argv) == 0) return 0;
+    
+    if(system("which mkvinfo > /dev/null 2>&1")) {
+        printf("mkvinfo not found/installed\n");
+        return 1;
+    }
+    if(system("which mkvmerge > /dev/null 2>&1")) {
+        printf("mkvmerge not found/installed\n");
+        return 1;
+    }
+ 
+    if(!cfgInit()) {
+        printf("config init failed!\n");
+        return 1;
+    }
 
     // Get current directory
     if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 0;
