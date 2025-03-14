@@ -8,8 +8,14 @@
 #include "../src/cJSON.h"
 #include "../src/filesys.h"
 #include "../src/guiextract.h"
+#include "../src/extractor.h"
+#include "../src/utils.h"
+
+void extractorCb(Track *track, int screenIdx) {
+}
 
 int main(int argc, char *argv[]) {
+
     // Since this is isolated let's setup ncurses here
     initscr();              // Init screen
     start_color();          // Enable colors
@@ -73,6 +79,20 @@ int main(int argc, char *argv[]) {
     json = NULL;
 
     guiExtractInit(&fl);
+    int test = 0;
+    while(true) {
+        for(int i = 0 ; i < fl.files[0].trackCount ; i++) {
+            extractorExtractTrack(&fl.files[0].tracks[i], 0, extractorCb);
+        }
+        guiExtractUpdate(&fl);
+        if(test > 50) break;
+        test++;
+        mssleep(50);
+    }
+
+    
+
+    guiExtractUpdate(&fl);
 
     while(1) {
         int ch = getch();
