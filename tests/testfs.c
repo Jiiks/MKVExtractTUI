@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "../src/filesys.h"
+#include "../src/cJSON.h"
 
 int main(int argc, char *argv[]) {
     printf("Testing filesys path: %s\n", argv[1]);
@@ -24,25 +25,15 @@ int main(int argc, char *argv[]) {
     int fileCount = fl.size;
     printf("%s\n", "Testing track detection");
 
-    // "pre"compile regexes
-    //if(fsCompileRegexes() == 0) {
-    //    fsCleanup();
-    //    fsFreeList(&fl);
-    //    return 0;
-    //}
-
     for(int i = 0 ; i < fileCount ; i++) {
         FileInfo *fi = &fl.files[i];
-        fsGetTracks(fi);
-        printf("File: %s | Tracks: %d\n", fi->name, fi->trackCount);
-        for(int ii = 0 ; ii < fl.files[i].trackCount ; ii++) {
-            Track *track = &fi->tracks[ii];
-            if(ii != 0) printf(" | ");
-            printf("#%d [%s] %s(%s) [%d,%d,%d,%d]", track->Idx, track->Language, trackGetCodecName(track->Codec), track->CodecStr, 
-            track->Forced, track->Default, track->HearingImpaired, track->OriginalLanguage);
-        }
-        printf("\n");
+        cJSON *json = fsGetTracksJson(fi);
+        cJSON *tracks = cJSON_GetObjectItemCaseSensitive(json, "tracks");
+        printf("%s Tracks: %d\n", fi->name, cJSON_GetArraySize(tracks));
+        cJSON_Delete(json);
     }
+
+
     fsCleanup();
     fsFreeList(&fl);
 
