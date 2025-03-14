@@ -15,19 +15,37 @@
 // Some command line args
 int argHandler(int argc, char *argv[]) {
     for (int i = 1; i < argc; ++i) {
-        if(strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0) {
+        if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
             printf("%s%s\n", "MKV(Sub)Extract Terminal UI v", MKVE_VERSION);
             return 0;
         }
-        if(strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
-            printf("%s\n", MKVE_REPO);
+        if(strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-?") == 0) {
+            printf(" %s [options] <input>\n\nOptions:\n", argv[0]);
+            printf("  -i, --input %*c Specify input file or directory.\n", 12, ' ');
+            printf("  -n, --nogui %*c Run guiless and extract all tracks that are tagged to auto check.\n", 12, ' ');
+            printf("  -p, --pattern %*c Specify custom renaming pattern. Default \"fn.flags.lang.ext\"\n", 10, ' ');
+            printf("  -l, --lang %*c Auto check all tracks matching language tags. Default: \"en,eng\"\n", 13, ' ');
+            printf("  -a, --all %*c Auto check all tracks.\n", 14, ' ');
+            printf("  -q, --quiet %*c Suppress output.\n", 12, ' ');
+
+            printf("\n  --repo %*c Print repository url.\n", 17, ' ');
+            printf("  --issues %*c Print issues url.\n", 15, ' ');
+            printf("  --readme %*c Print readme url.\n", 15, ' ');
+            
+            printf("\n  -h, --help %*c Show this help.\n", 13, ' ');
+            printf("  -v, --version %*c Show version information.\n\n", 10, ' ');
+            //printf("%s\n", MKVE_REPO);
             return 0;
         }
-        if(strcmp(argv[i], "-issues") == 0) {
+        if(strcmp(argv[i], "--issues") == 0) {
             printf("%s\n", MKVE_ISSUES);
             return 0;
         }
-        if(strcmp(argv[i], "-readme") == 0) {
+        if(strcmp(argv[i], "--repo") == 0) {
+            printf("%s\n", MKVE_REPO);
+            return 0;
+        }
+        if(strcmp(argv[i], "--readme") == 0) {
             printf("%s\n", MKVE_README);
             return 0;
         }
@@ -43,7 +61,7 @@ int main(int argc, char *argv[]) {
     if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 0;
     // Custom input directory
     if(argc > 2) {
-        if(strcmp(argv[1], "-i") == 0) {
+        if(strcmp(argv[1], "-i") == 0 || strcmp(argv[1], "--input")) {
             strcpy(g_cfg.wd, argv[2]);
         }
     }
