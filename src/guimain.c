@@ -253,6 +253,7 @@ void guiMainUpdateMain() {
             // Ignore non sub tracks since we don't currently care about those
             if(strstr(type->valuestring, "subtitles") == NULL) continue;
             Track parsedTrack = trackParseJson(track);
+            trackResolveNewName(fi->name, &parsedTrack);
             fsAddTrack(fi, &parsedTrack, row);
             row += 1;
         }
@@ -265,8 +266,7 @@ void guiMainUpdateMain() {
         wclear(ctx.mainPad);
         for(int i = 0 ; i < fi->trackCount ; i++) {
             Track track = fi->tracks[i];
-            char newName[256];
-            trackResolveNewName(fi->name, &track, newName);
+            
             char df[256];
             displayFlags(track.Flags, df);
      
@@ -277,7 +277,7 @@ void guiMainUpdateMain() {
                 track.Language,
                 df,
                 fi->lt - (int)strlen(df), " ",
-                newName
+                track.NewName
             );
             wattroff(ctx.mainPad, A_BOLD | A_STANDOUT);
         }

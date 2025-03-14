@@ -29,6 +29,7 @@ typedef struct {
     int Idx;                // Track index. This is the index used with mkvextract not the track #
     int Num;                // Track number
     char Name[64];          // Track name. 64 should be enough
+    char NewName[256];
     char Type[10];          // Track type
     char Language[4];       // 2 or 3 char language tag
     char Extension[4];      // Extension
@@ -49,7 +50,7 @@ typedef struct {
     bool TextSubtitles;     // Text subtitles
 } Track;
 
-void trackResolveNewName(const char *fileName, Track *track, char *out);
+void trackResolveNewName(const char *fileName, Track *track);
 
 /// @brief Parses track json
 /// @param json Track json string

@@ -16,9 +16,7 @@
 
 int extractorExtractTrack(FileList *fl, FileInfo *fi, Track *track, const char* fileName, int screenIdx, ExtractorProgressUpdate cb) {
     char command[4096];
-    char newName[256];
-    trackResolveNewName(fileName, track, newName);
-    snprintf(command, sizeof(command), "mkvextract '%s' tracks %d:'%s/_test_%s'", fi->fullPath, track->Idx, fi->path, newName);
+    snprintf(command, sizeof(command), "mkvextract '%s' tracks %d:'%s/_test_%s'", fi->fullPath, track->Idx, fi->path, track->NewName);
     
     char buf[1024];
     FILE *fp = popen(command, "r");

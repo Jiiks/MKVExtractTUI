@@ -38,9 +38,7 @@ void guiExtractUpdate(FileList *fl) {
         FileInfo *fi = &fl->files[i];
         for(int t = 0 ; t < fi->trackCount ; t++) {
             Track track = fi->tracks[t];
-            char newName[256];
-            trackResolveNewName(fi->name, &track, newName);
-            if(strlen(newName) > ln) ln = strlen(newName);
+            if(strlen(track.NewName) > ln) ln = strlen(track.NewName);
         }
     }
 
@@ -50,8 +48,6 @@ void guiExtractUpdate(FileList *fl) {
         for(int ii = 0 ; ii < fi->trackCount ; ii++) {
             Track track = fi->tracks[ii];
             if(!track.Extract) continue;
-            char newName[256];
-            trackResolveNewName(fi->name, &track, newName);
             if(track.ExtractProgress > 0 && track.ExtractProgress < 100) {
                 wattron(extractWinPad, A_BLINK | A_BOLD);
             } else if(track.ExtractProgress <= 0) {
@@ -60,8 +56,8 @@ void guiExtractUpdate(FileList *fl) {
                 wattron(extractWinPad, A_BOLD);
             }
             mvwprintw(extractWinPad, idx, 1, "%s %*s | %3d%c", 
-                newName, 
-                ln - (int)strlen(newName) + 1, " ",
+                track.NewName, 
+                ln - (int)strlen(track.NewName) + 1, " ",
                 track.ExtractProgress, '%');
             wattroff(extractWinPad, A_BLINK | A_BOLD | A_DIM);
             idx++;
@@ -72,8 +68,6 @@ void guiExtractUpdate(FileList *fl) {
 }
 
 void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track) {
-    char newName[256];
-    trackResolveNewName(fi->name, &track, newName);
     if(track->ExtractProgress > 0 && track->ExtractProgress < 100) {
         wattron(extractWinPad, A_BLINK | A_BOLD);
     } else if(track->ExtractProgress <= 0) {
@@ -82,8 +76,8 @@ void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track) {
         wattron(extractWinPad, A_BOLD);
     }
     mvwprintw(extractWinPad, at, 1, "%s %*s | %3d%c", 
-        newName, 
-        ln - (int)strlen(newName) + 1, " ",
+        track->NewName, 
+        ln - (int)strlen(track->NewName) + 1, " ",
         track->ExtractProgress, '%');
     wattroff(extractWinPad, A_BLINK | A_BOLD | A_DIM);
     prefresh(extractWinPad, extractPadPos, 0, 3, 4, r - 6, c - 6);

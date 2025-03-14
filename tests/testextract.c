@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
         // Ignore non sub tracks since we don't currently care about those
         if(strstr(type->valuestring, "subtitles") == NULL) continue;
         Track parsedTrack = trackParseJson(track);
+        trackResolveNewName(fi->name, &parsedTrack);
         fsAddTrack(fi, &parsedTrack, row);
         row += 1;
     }

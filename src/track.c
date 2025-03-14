@@ -25,7 +25,6 @@ const char *trackGetCodecName(trackCodec c) {
     return "und";
 }
 
-
 bool checkName(const char *name, const char *what) {
     if(strcasestr(name, what) != NULL) return true;
     return false;
@@ -131,44 +130,42 @@ void removeExt(char *filename) {
     }
 }
 
-// TODO should store new name in Track
-void trackResolveNewName(const char *fileName, Track *track, char *out) {
+void trackResolveNewName(const char *fileName, Track *track) {
     char *pos;
     char buffer[256];
-    char tempOut[256];
-    strcpy(tempOut, "fn.flags.lang.ext");
+
     strcpy(buffer, fileName);
-    
     removeExt(buffer);
 
-    // Replace fn in format with the filename
-    while((pos = strstr(tempOut, "fn")) != NULL) {
+    // Start with the format directly in track->NewName
+    strcpy(track->NewName, "fn.flags.lang.ext");
+
+    // Replace "fn" in format with the filename
+    while ((pos = strstr(track->NewName, "fn")) != NULL) {
         size_t len = strlen(buffer);
         memmove(pos + len, pos + 2, strlen(pos + 2) + 1);
         memcpy(pos, buffer, len);
     }
 
-    // Replace flags in format with flags
-    while((pos = strstr(tempOut, "flags.")) != NULL) {
+    // Replace "flags" in format with flags
+    while ((pos = strstr(track->NewName, "flags.")) != NULL) {
         size_t len = strlen(track->Flags);
         memmove(pos + len, pos + 6, strlen(pos + 6) + 1);
         memcpy(pos, track->Flags, len);
     }
 
-    // Replace lang in format with language tag
-    while((pos = strstr(tempOut, "lang")) != NULL) {
+    // Replace "lang" in format with language tag
+    while ((pos = strstr(track->NewName, "lang")) != NULL) {
         size_t len = strlen(track->Language);
         memmove(pos + len, pos + 4, strlen(pos + 4) + 1);
         memcpy(pos, track->Language, len);
     }
 
-    // Replace extension with correct one. For now just srt
-    while((pos = strstr(tempOut, "ext")) != NULL) {
+    // Replace "ext" in format with "srt"
+    while ((pos = strstr(track->NewName, "ext")) != NULL) {
         memmove(pos + 3, pos + 3, strlen(pos + 3) + 1);
         memcpy(pos, "srt", 3);
     }
-
-    strcpy(out, tempOut);
 }
 
 void trackPrintDbg(const Track *track) {
