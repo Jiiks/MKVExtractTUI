@@ -25,11 +25,11 @@ int main(int argc, char *argv[]) {
     printf("%s\n", "Testing track detection");
 
     // "pre"compile regexes
-    if(fsCompileRegexes() == 0) {
-        fsCleanup();
-        fsFreeList(&fl);
-        return 0;
-    }
+    //if(fsCompileRegexes() == 0) {
+    //    fsCleanup();
+    //    fsFreeList(&fl);
+    //    return 0;
+    //}
 
     for(int i = 0 ; i < fileCount ; i++) {
         FileInfo *fi = &fl.files[i];
