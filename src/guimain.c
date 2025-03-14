@@ -323,6 +323,7 @@ void guiSidebarSelect(int dir) {
     //guiMainUpdateMain();
 }
 
+// TODO Something buggy here when tons of tracks.
 void guiMainSelect(int dir) {
     FileInfo *fi = &ctx.fileList->files[ctx.sidebarIdx];
 
