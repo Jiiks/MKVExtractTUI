@@ -44,22 +44,20 @@ void guiExtractUpdate(FileList *fl) {
         int idx = 0;
         for(int ii = 0 ; ii < fi->trackCount ; ii++) {
             Track track = fi->tracks[ii];
-            if(track.Extract) continue; // Testing. Should be if(!track.Extract) continue; in final
-            if(idx == 2) track.ExtractProgress = 100;
-            if(idx == 3) track.ExtractProgress = 99;
+            if(!track.Extract) continue;
             char newName[256];
             trackResolveNewName(fi->name, &track, newName);
-            if(idx == 1) { 
+            if(track.ExtractProgress > 0 && track.ExtractProgress < 100) {
                 track.ExtractProgress = 13;
                 wattron(extractWinPad, A_BLINK | A_BOLD);
-            } else if(track.ExtractProgress < 100) {
+            } else {
                 wattron(extractWinPad, A_DIM);
             }
             mvwprintw(extractWinPad, idx, 1, "%s %*s | %3d%c", 
                 newName, 
                 ln - (int)strlen(newName) + 1, " ",
                 track.ExtractProgress, '%');
-                wattroff(extractWinPad, A_BLINK | A_BOLD | A_DIM);
+            wattroff(extractWinPad, A_BLINK | A_BOLD | A_DIM);
             idx++;
         }
     }
