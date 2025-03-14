@@ -45,6 +45,15 @@ int main(int argc, char *argv[]) {
 
     int row = 0;
     cJSON *track = NULL;
+    int trackCount = cJSON_GetArraySize(tracks);
+    // Allocate tracks
+    if(trackCount > 0) {
+        if(fi->tracks != NULL) {
+            free(fi->tracks);
+            fi->tracks = NULL;
+        }
+        fi->tracks = malloc(trackCount * sizeof(Track));
+    }
     
     cJSON_ArrayForEach(track, tracks) {
         if(track == NULL) {
@@ -55,8 +64,8 @@ int main(int argc, char *argv[]) {
         cJSON *type = cJSON_GetObjectItemCaseSensitive(track, "type");
         // Ignore non sub tracks since we don't currently care about those
         if(strstr(type->valuestring, "subtitles") == NULL) continue;
-        Track *parsedTrack = trackParseJson(track);
-        fsAddTrack(fi, parsedTrack);
+        Track parsedTrack = trackParseJson(track);
+        fsAddTrack(fi, &parsedTrack, row);
         row += 1;
     }
 
