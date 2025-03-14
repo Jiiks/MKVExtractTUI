@@ -7,7 +7,10 @@
 #ifndef GUIEXTRACT_H
 #define GUIEXTRACT_H
 
-void guiExtractInit();
+#include "filesys.h"
+
+void guiExtractInit(FileList *fl);
 void guiExtractClean();
+void guiExtractUpdate(FileList *fl);
 
 #endif // GUIEXTRACT_H

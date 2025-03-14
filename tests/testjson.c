@@ -21,11 +21,11 @@ int main(int argc, char *argv[]) {
 
     if(json == NULL) {
         printf("json is null");
+        fsFreeList(&fl);
         return 1;
     }
 
     cJSON *tracks = NULL;
-
     tracks = cJSON_GetObjectItemCaseSensitive(json, "tracks");
     printf("Tracks is null? %s\n", tracks == NULL ? "yes" : "no");
 

@@ -47,6 +47,7 @@ Track *trackParseJson(cJSON *json) {
     Track *track = malloc(sizeof(Track));
     track->IsSubTrack = true;
     track->Extract = false;
+    track->ExtractProgress = 0;
     track->Forced = false;
     track->Default = false;
     track->ClosedCaptions = false;
