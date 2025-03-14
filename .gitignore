@@ -6,6 +6,7 @@
 !.vscode/*.code-snippets
 
 src/filesys.old
+valgrind-out.txt
 
 # Local History for Visual Studio Code
 .history/

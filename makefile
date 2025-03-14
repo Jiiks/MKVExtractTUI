@@ -43,12 +43,16 @@ reset:
 
 # Tests
 
+valgrind: 
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./bin/mkvextracttui -i $(TEST_PATH)
+
 TESTDIR = tests
 TESTSRC = $(filter-out $(SRCDIR)/main.c, $(wildcard $(SRCDIR)/*.c))
 TESTOBJ = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(TESTSRC))
 
 TEST_FS = testfs
 TEST_JSON = testjson
+TEST_EXTRACT = testextract
 
 testfs: $(TESTOBJ) $(OBJDIR)/$(TEST_FS).o
 	$(CC) -o $(BINDIR)/$(TEST_FS) $(TESTOBJ) $(OBJDIR)/$(TEST_FS).o $(CFLAGS)
@@ -67,3 +71,10 @@ testjson: $(TESTOBJ) $(OBJDIR)/$(TEST_JSON).o
 
 $(OBJDIR)/$(TEST_JSON).o: $(TESTDIR)/$(TEST_JSON).c
 	$(CC) -c $(TESTDIR)/$(TEST_JSON).c -o $(OBJDIR)/$(TEST_JSON).o 
+
+testextract: $(TESTOBJ) $(OBJDIR)/$(TEST_EXTRACT).o
+	$(CC) -o $(BINDIR)/$(TEST_EXTRACT) $(TESTOBJ) $(OBJDIR)/$(TEST_EXTRACT).o $(CFLAGS)
+	$(BINDIR)/$(TEST_EXTRACT) $(TEST_PATH) ".mkv"
+
+$(OBJDIR)/$(TEST_EXTRACT).o: $(TESTDIR)/$(TEST_EXTRACT).c
+	$(CC) -c $(TESTDIR)/$(TEST_EXTRACT).c -o $(OBJDIR)/$(TEST_EXTRACT).o 
