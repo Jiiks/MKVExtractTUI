@@ -69,21 +69,27 @@ int main(int argc, char *argv[]) {
     while(1) {
         ch = getch();
         if(ch == 'q') break;
-        if(ch == KEY_PPAGE) {
-            guiSidebarSelect(-1);
+        switch(ch) {
+            case KEY_PPAGE:
+                guiSidebarSelect(-1);
+                break;
+            case KEY_NPAGE:
+                guiSidebarSelect(1);
+                break;
+            case KEY_HOME:
+                guiSidebarSelect(0);
+                break;
+            case KEY_UP:
+                guiMainSelect(-1);
+                break;
+            case KEY_DOWN:
+                guiMainSelect(1);
+                break;
+            case ' ':
+                guiMainCheck();
+                break;
         }
-        if(ch == KEY_NPAGE) {
-            guiSidebarSelect(1);
-        }
-        if(ch == KEY_HOME) {
-            guiSidebarSelect(0);
-        }
-        if(ch == KEY_UP) {
-            guiMainSelect(-1);
-        }
-        if(ch == KEY_DOWN) {
-            guiMainSelect(1);
-        }
+
     }
     fsCleanup();
     guiMainClean();

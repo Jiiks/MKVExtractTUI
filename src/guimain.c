@@ -355,6 +355,12 @@ void guiMainSelect(int dir) {
     guiMainUpdateMain();
 }
 
+void guiMainCheck() {
+    FileInfo *fi = &ctx.fileList->files[ctx.sidebarIdx];
+    fi->tracks[fi->selectedIndex].Extract = !fi->tracks[fi->selectedIndex].Extract;
+    guiMainUpdateMain();
+}
+
 void guiMainClean() {
     if(ctx.sidebarPad != NULL) {
         delwin(ctx.sidebarPad);

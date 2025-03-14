@@ -42,4 +42,7 @@ int guiGetSidebarIndex();
 /// @return Main container selected index
 int guiGetMainIndex();
 
+/// @brief Check selected track
+void guiMainCheck();
+
 #endif // GUIMAIN_H
