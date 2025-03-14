@@ -35,19 +35,16 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize) {
     return fileList;
 }
 
-void fsAddTrack(FileInfo *fi, Track *track) {
+void fsSetupTracks(FileInfo *fi, const int trackCount) {
+    fi->trackCount = trackCount;
+    fi->tracks = malloc(trackCount * sizeof(Track));
+}
+
+void fsAddTrack(FileInfo *fi, Track *track, const int idx) {
+    fi->tracks[fi->trackCount] = *track;
     fi->trackCount++;
-    Track *newTracks = realloc(fi->tracks, fi->trackCount * sizeof(Track));
-    if (newTracks != NULL) {
-        fi->tracks = newTracks;
-        memcpy(&fi->tracks[fi->trackCount - 1], track, sizeof(Track));
-        int fl = strlen(track->Flags);
-        if(fl > fi->lt) fi->lt = fl; // Set lt for gui reasons
-    } else {
-        // Handle memory allocation failure
-        fprintf(stderr, "Memory allocation failed\n");
-        fi->trackCount--; // Restore trackCount to its previous value
-    }
+    int fl = strlen(track->Flags);
+    if(fl > fi->lt) fi->lt = fl; // Set lt for gui reasons
 }
 
 void fsGetTracks(FileInfo *fileInfo) {}
@@ -115,7 +112,10 @@ void fsAddFile(FileList *list, const char *name, const char *path) {
     last->trackCount = 0;
     last->lt = 0;
     last->selectedIndex = 0;
-
+    if(last->tracks != NULL) {
+        free(last->tracks);
+        last->tracks = NULL;
+    }
     last->name = strdup(name);
     last->path = strdup(path);
 

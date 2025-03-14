@@ -43,6 +43,7 @@ typedef struct {
 /// @return FileList of files in directory.
 FileList fsScanDir(const char *path, const char *filter, size_t initialSize);
 
+void fsSetupTracks(FileInfo *fi, const int trackCount);
 void fsGetTracks(FileInfo *fileInfo);
 
 cJSON *fsGetTracksJson(FileInfo *fileInfo);
@@ -64,7 +65,8 @@ void fsSortList(FileList *list);
 /// @brief Add track to fileinfo
 /// @param fi FileInfo to add track to
 /// @param track Track to add
-void fsAddTrack(FileInfo *fi, Track *track);
+/// @param idx Track index
+void fsAddTrack(FileInfo *fi, Track *track, const int idx);
 
 void fsCleanup();
 

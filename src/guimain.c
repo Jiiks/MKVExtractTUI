@@ -221,6 +221,7 @@ void displayFlags(const char *input, char *output) {
 void guiMainUpdateMain() {
     FileInfo *fi = &ctx.fileList->files[ctx.sidebarIdx];
     wclear(ctx.mainPad);
+    // Track count is 0 so load all tracks
     if(fi->trackCount == 0) {
         mvwprintw(ctx.mainPad, 0, 0, "Loading tracks...");
         prefresh(ctx.mainPad, ctx.mainPadPos, 0, 2, ctx.sidebarWidth + 2, ctx.row - BOTTOM_PAD - 1, ctx.sidebarWidth + ctx.mainAreaWidth - 1);
@@ -230,6 +231,13 @@ void guiMainUpdateMain() {
         cJSON *track = NULL;
         int row = 0;
         wclear(ctx.mainPad);
+
+        int trackCount = cJSON_GetArraySize(tracks);
+        // Allocate tracks
+        if(trackCount > 0) {
+            fi->tracks = malloc(trackCount * sizeof(Track));
+        }
+
         cJSON_ArrayForEach(track, tracks) {
             if(track == NULL) {
                 mvwprintw(ctx.mainPad, ctx.sidebarWidth, 2, "Track is null: %d", row);
@@ -241,7 +249,7 @@ void guiMainUpdateMain() {
             // Ignore non sub tracks since we don't currently care about those
             if(strstr(type->valuestring, "subtitles") == NULL) continue;
             Track *parsedTrack = trackParseJson(track);
-            fsAddTrack(fi, parsedTrack);
+            fsAddTrack(fi, parsedTrack, row);
             row += 1;
         }
         cJSON_Delete(json);

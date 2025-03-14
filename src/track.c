@@ -43,6 +43,7 @@ void appendFlag(char *flags, const char *append, size_t size) {
 }
 
 // TODO We're still missing commentary and cc tags
+// TODO don't malloc track
 Track *trackParseJson(cJSON *json) {
     Track *track = malloc(sizeof(Track));
     track->IsSubTrack = true;
