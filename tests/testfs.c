@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
         for(int ii = 0 ; ii < fl.files[i].trackCount ; ii++) {
             Track *track = &fi->tracks[ii];
             if(ii != 0) printf(" | ");
-            printf("#%d [%s] %s(%s) [%d,%d,%d,%d]", track->Idx, track->Language, fsGetCodecName(track->Codec), track->CodecStr, 
+            printf("#%d [%s] %s(%s) [%d,%d,%d,%d]", track->Idx, track->Language, trackGetCodecName(track->Codec), track->CodecStr, 
             track->Forced, track->Default, track->HearingImpaired, track->OriginalLanguage);
         }
         printf("\n");
