@@ -9,6 +9,8 @@
 
 
 WINDOW *extractWin;
+WINDOW *extractWinPad;
+int extractPadPos = 0;
 
 void guiExtractInit() {
     int row, col;
@@ -17,10 +19,22 @@ void guiExtractInit() {
     box(extractWin, 0, 0);
     mvwprintw(extractWin, 0, 1, " Extracting ESC to abort ");
     wrefresh(extractWin);
+
+    extractWinPad = newpad(100, col - 4);
+    for(int i = 0 ; i < 100 ; i++) {
+        mvwprintw(extractWinPad, i, 1, "%s - %d", "Test", i);
+    }
+
+    prefresh(extractWinPad, extractPadPos, 0, 3, 4, row - 6, col - 6);
+
 }
 void guiExtractClean() {
+    if(extractWinPad != NULL) {
+        delwin(extractWinPad);
+        extractWinPad = NULL;
+    }
     if(extractWin != NULL) {
         delwin(extractWin);
-        extractWin= NULL;
+        extractWin = NULL;
     }
 }
