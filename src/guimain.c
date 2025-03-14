@@ -235,6 +235,10 @@ void guiMainUpdateMain() {
         int trackCount = cJSON_GetArraySize(tracks);
         // Allocate tracks
         if(trackCount > 0) {
+            if(fi->tracks != NULL) {
+                free(fi->tracks);
+                fi->tracks = NULL;
+            }
             fi->tracks = malloc(trackCount * sizeof(Track));
         }
 
