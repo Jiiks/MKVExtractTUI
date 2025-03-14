@@ -9,8 +9,8 @@
 
 #include "filesys.h"
 
-typedef void (*ExtractorProgressUpdate)(Track *track, int screenIdx);
+typedef void (*ExtractorProgressUpdate)(FileList *fl, FileInfo *fi, Track *track, int screenIdx);
 
-void extractorExtractTrack(Track *track, int screenIdx, ExtractorProgressUpdate cb);
+int extractorExtractTrack(FileList *fl, FileInfo *fi, Track *track, const char* fileName, int screenIdx, ExtractorProgressUpdate cb);
 
 #endif // EXTRACTOR_H

@@ -11,10 +11,15 @@
 WINDOW *extractWin;
 WINDOW *extractWinPad;
 int extractPadPos = 0;
+int r;
+int c;
+int ln;
 
 void guiExtractInit(FileList *fl) {
     int row, col;
     getmaxyx(stdscr, row, col);
+    r = row;
+    c = col;
     extractWin = newwin(row - 6, col - 4, 2, 3);
     box(extractWin, 0, 0);
     mvwprintw(extractWin, 0, 1, " Extracting ESC to abort ");
@@ -28,7 +33,7 @@ void guiExtractUpdate(FileList *fl) {
     int row, col;
     getmaxyx(stdscr, row, col);
     // TODO move this elsewhere
-    int ln = 0;
+    ln = 0;
     for(int i = 0 ; i < fl->size ; i++) {
         FileInfo *fi = &fl->files[i];
         for(int t = 0 ; t < fi->trackCount ; t++) {
@@ -48,10 +53,11 @@ void guiExtractUpdate(FileList *fl) {
             char newName[256];
             trackResolveNewName(fi->name, &track, newName);
             if(track.ExtractProgress > 0 && track.ExtractProgress < 100) {
-                track.ExtractProgress = 13;
                 wattron(extractWinPad, A_BLINK | A_BOLD);
-            } else {
+            } else if(track.ExtractProgress <= 0) {
                 wattron(extractWinPad, A_DIM);
+            } else {
+                wattron(extractWinPad, A_BOLD);
             }
             mvwprintw(extractWinPad, idx, 1, "%s %*s | %3d%c", 
                 newName, 
@@ -63,6 +69,24 @@ void guiExtractUpdate(FileList *fl) {
     }
 
     prefresh(extractWinPad, extractPadPos, 0, 3, 4, row - 6, col - 6);
+}
+
+void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track) {
+    char newName[256];
+    trackResolveNewName(fi->name, &track, newName);
+    if(track->ExtractProgress > 0 && track->ExtractProgress < 100) {
+        wattron(extractWinPad, A_BLINK | A_BOLD);
+    } else if(track->ExtractProgress <= 0) {
+        wattron(extractWinPad, A_DIM);
+    } else {
+        wattron(extractWinPad, A_BOLD);
+    }
+    mvwprintw(extractWinPad, at, 1, "%s %*s | %3d%c", 
+        newName, 
+        ln - (int)strlen(newName) + 1, " ",
+        track->ExtractProgress, '%');
+    wattroff(extractWinPad, A_BLINK | A_BOLD | A_DIM);
+    prefresh(extractWinPad, extractPadPos, 0, 3, 4, r - 6, c - 6);
 }
 
 void guiExtractClean() {

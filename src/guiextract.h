@@ -12,5 +12,6 @@
 void guiExtractInit(FileList *fl);
 void guiExtractClean();
 void guiExtractUpdate(FileList *fl);
+void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track);
 
 #endif // GUIEXTRACT_H

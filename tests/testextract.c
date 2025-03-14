@@ -11,7 +11,8 @@
 #include "../src/extractor.h"
 #include "../src/utils.h"
 
-void extractorCb(Track *track, int screenIdx) {
+void extractorCb(FileList *fl, FileInfo *fi, Track *track, int screenIdx) {
+    guiExtractUpdateAt(screenIdx, fi, track);
 }
 
 int main(int argc, char *argv[]) {
@@ -79,19 +80,13 @@ int main(int argc, char *argv[]) {
     json = NULL;
 
     guiExtractInit(&fl);
-    int test = 0;
-    while(true) {
-        for(int i = 0 ; i < fl.files[0].trackCount ; i++) {
-            extractorExtractTrack(&fl.files[0].tracks[i], 0, extractorCb);
+    int screenIdx = 0;
+    for(int i = 0 ; i < fl.files[0].trackCount ; i++) {
+        if(fl.files[0].tracks[i].Extract) {
+            extractorExtractTrack(&fl, &fl.files[0], &fl.files[0].tracks[i], fl.files[0].name, screenIdx, extractorCb);
+            screenIdx++;
         }
-        guiExtractUpdate(&fl);
-        if(test > 50) break;
-        test++;
-        mssleep(50);
     }
-
-    
-
     guiExtractUpdate(&fl);
 
     while(1) {

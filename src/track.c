@@ -131,6 +131,7 @@ void removeExt(char *filename) {
     }
 }
 
+// TODO should store new name in Track
 void trackResolveNewName(const char *fileName, Track *track, char *out) {
     char *pos;
     char buffer[256];
