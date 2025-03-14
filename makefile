@@ -69,9 +69,9 @@ testjson: $(TESTOBJ) $(OBJDIR)/$(TEST_JSON).o
 $(OBJDIR)/$(TEST_JSON).o: $(TESTDIR)/$(TEST_JSON).c
 	$(CC) -c $(TESTDIR)/$(TEST_JSON).c -o $(OBJDIR)/$(TEST_JSON).o 
 
-testextract: $(TESTOBJ) $(OBJDIR)/$(testextract).o
-	$(CC) -o $(BINDIR)/$(testextract) $(TESTOBJ) $(OBJDIR)/$(testextract).o $(CFLAGS)
-	$(BINDIR)/$(testextract) $(TEST_PATH) ".mkv"
+testextract: $(TESTOBJ) $(OBJDIR)/$(TEST_EXTRACT).o
+	$(CC) -o $(BINDIR)/$(TEST_EXTRACT) $(TESTOBJ) $(OBJDIR)/$(TEST_EXTRACT).o $(CFLAGS)
+	$(BINDIR)/$(TEST_EXTRACT) $(TEST_PATH) ".mkv"
 
-$(OBJDIR)/$(testextract).o: $(TESTDIR)/$(testextract).c
-	$(CC) -c $(TESTDIR)/$(testextract).c -o $(OBJDIR)/$(testextract).o 
+$(OBJDIR)/$(TEST_EXTRACT).o: $(TESTDIR)/$(TEST_EXTRACT).c
+	$(CC) -c $(TESTDIR)/$(TEST_EXTRACT).c -o $(OBJDIR)/$(TEST_EXTRACT).o 
