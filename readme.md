@@ -1,13 +1,12 @@
 
 # Mkv(Sub)ExtractTUI
-## Currently does not extract since this just a git init.
-  
 
 Mkv(Sub)ExtractTUI is a terminal-based user interface for extracting subtitles from MKV containers.
 
 - Currently only supports srt subtitles but I'll add support for others momentarily.
 
-![alt text](image.png)
+![gif](https://github.com/user-attachments/assets/65053a8a-cfd2-4f8a-a5c0-2bacc802fe32)
+
 
 ## Features
 
@@ -31,6 +30,11 @@ also can be run guiless with either `guiless=true` in config or `-nogui`
 When done so all subtitles that are configured to be auto checked will be extracted automatically.
 
 Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/MkvExtractTUI`
+
+## TODO
+- Most of the command line options
+- Settings store
+- Support for other than srt
 
 ## Dependencies
 

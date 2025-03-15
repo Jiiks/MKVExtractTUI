@@ -8,8 +8,15 @@
 #include "../src/cJSON.h"
 #include "../src/filesys.h"
 #include "../src/guiextract.h"
+#include "../src/extractor.h"
+#include "../src/utils.h"
+
+void extractorCb(FileList *fl, FileInfo *fi, Track *track, int screenIdx) {
+    guiExtractUpdateAt(screenIdx, fi, track);
+}
 
 int main(int argc, char *argv[]) {
+
     // Since this is isolated let's setup ncurses here
     initscr();              // Init screen
     start_color();          // Enable colors
@@ -45,6 +52,15 @@ int main(int argc, char *argv[]) {
 
     int row = 0;
     cJSON *track = NULL;
+    int trackCount = cJSON_GetArraySize(tracks);
+    // Allocate tracks
+    if(trackCount > 0) {
+        if(fi->tracks != NULL) {
+            free(fi->tracks);
+            fi->tracks = NULL;
+        }
+        fi->tracks = malloc(trackCount * sizeof(Track));
+    }
     
     cJSON_ArrayForEach(track, tracks) {
         if(track == NULL) {
@@ -55,8 +71,9 @@ int main(int argc, char *argv[]) {
         cJSON *type = cJSON_GetObjectItemCaseSensitive(track, "type");
         // Ignore non sub tracks since we don't currently care about those
         if(strstr(type->valuestring, "subtitles") == NULL) continue;
-        Track *parsedTrack = trackParseJson(track);
-        fsAddTrack(fi, parsedTrack);
+        Track parsedTrack = trackParseJson(track);
+        trackResolveNewName(fi->name, &parsedTrack);
+        fsAddTrack(fi, &parsedTrack, row);
         row += 1;
     }
 
@@ -64,6 +81,14 @@ int main(int argc, char *argv[]) {
     json = NULL;
 
     guiExtractInit(&fl);
+    int screenIdx = 0;
+    for(int i = 0 ; i < fl.files[0].trackCount ; i++) {
+        if(fl.files[0].tracks[i].Extract) {
+            extractorExtractTrack(&fl, &fl.files[0], &fl.files[0].tracks[i], fl.files[0].name, screenIdx, extractorCb);
+            screenIdx++;
+        }
+    }
+    guiExtractUpdate(&fl);
 
     while(1) {
         int ch = getch();

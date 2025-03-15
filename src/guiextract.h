@@ -11,6 +11,7 @@
 
 void guiExtractInit(FileList *fl);
 void guiExtractClean();
-void guiExtractUpdate(FileList *fl);
+void guiExtractUpdate(FileList *fl, const int aborted);
+void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track, const int aborted);
 
 #endif // GUIEXTRACT_H

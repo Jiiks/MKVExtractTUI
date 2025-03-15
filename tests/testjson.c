@@ -38,9 +38,8 @@ int main(int argc, char *argv[]) {
         cJSON *type = cJSON_GetObjectItemCaseSensitive(track, "type");
         // Ignore non sub tracks since we don't currently care about those
         if(strstr(type->valuestring, "subtitles") == NULL) continue;
-        Track *parsedTrack = trackParseJson(track);
-        trackPrintDbg(parsedTrack);
-        free(parsedTrack);
+        Track parsedTrack = trackParseJson(track);
+        trackPrintDbg(&parsedTrack);
     }
 
     cJSON_Delete(json);
