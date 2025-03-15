@@ -35,6 +35,9 @@ Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/Mkv
 - Most of the command line options
 - Settings store
 - Support for other than srt
+- Confirm overwrite
+- Extractor screen automatic scrolling
+- Extractor total progress/finished prompt
 
 ## Dependencies
 
