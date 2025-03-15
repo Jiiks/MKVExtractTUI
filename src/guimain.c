@@ -387,18 +387,78 @@ void extractorCb(FileList *fl, FileInfo *fi, Track *track, int screenIdx, int ab
 
 void guiMainExtract(ExtractFinished cb) {
     aborted = 0;
-    extractorInit();
+    
     FileList *fl = ctx.fileList;
+    // Load missing tracks first
+    for(int findex = 0 ; findex < (int)fl->size ; findex++) {
+        FileInfo *fi = &fl->files[findex];
+
+        if(fi->trackCount == 0) {
+            cJSON *json = fsGetTracksJson(fi);
+            cJSON *tracks = cJSON_GetObjectItemCaseSensitive(json, "tracks");
+            cJSON *track = NULL;
+            int row = 0;
+    
+            int trackCount = cJSON_GetArraySize(tracks);
+            // Allocate tracks
+            if(trackCount > 0) {
+                if(fi->tracks != NULL) {
+                    free(fi->tracks);
+                    fi->tracks = NULL;
+                }
+                fi->tracks = malloc(trackCount * sizeof(Track));
+            }
+    
+            cJSON_ArrayForEach(track, tracks) {
+                if(track == NULL) {
+                    row += 1;
+                    continue;
+                }
+                
+                cJSON *type = cJSON_GetObjectItemCaseSensitive(track, "type");
+                // Ignore non sub tracks since we don't currently care about those
+                if(strstr(type->valuestring, "subtitles") == NULL) continue;
+                Track parsedTrack = trackParseJson(track);
+                trackResolveNewName(fi->name, &parsedTrack);
+                fsAddTrack(fi, &parsedTrack, row);
+                row += 1;
+            }
+            cJSON_Delete(json);
+        }
+
+
+    }
+
+    extractorInit();
     guiExtractInit(ctx.fileList);
+
+    // TODO Extractor scrolling
+
     int screenIdx = 0;
-    int trackCount = fl->files[0].trackCount;
     for(int f = 0 ; f < (int)fl->size ; f++) {
+        int trackCount = fl->files[f].trackCount;
+        for(int i = 0 ; i < trackCount ; i++) {
+            FileInfo *fi = &fl->files[f];
+            Track *track = &fi->tracks[i];
+            if(track->Extract) {
+                // First update all to extract
+                extractorCb(fl, fi, track, screenIdx, 0);
+                //extractorExtractTrack(fl, fi, track, fi->name, screenIdx, extractorCb);
+                screenIdx++;
+            }
+        }
+    }
+
+    screenIdx = 0;
+    for(int f = 0 ; f < (int)fl->size ; f++) {
+        int trackCount = fl->files[f].trackCount;
         for(int i = 0 ; i < trackCount ; i++) {
             if(getch() == 27) aborted = 1;
             if(aborted != 0) break;
             FileInfo *fi = &fl->files[f];
             Track *track = &fi->tracks[i];
             if(track->Extract) {
+                //Re do the loop with extract
                extractorExtractTrack(fl, fi, track, fi->name, screenIdx, extractorCb);
                screenIdx++;
             }
