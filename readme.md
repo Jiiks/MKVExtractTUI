@@ -31,6 +31,11 @@ When done so all subtitles that are configured to be auto checked will be extrac
 
 Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/MkvExtractTUI`
 
+## TODO
+- Most of the command line options
+- Settings store
+- Support for other than srt
+
 ## Dependencies
 
 - `ncurses`: Library for creating terminal-based user interfaces.
