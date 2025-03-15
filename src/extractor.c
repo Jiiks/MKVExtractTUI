@@ -37,7 +37,7 @@ int extractorExtractTrack(FileList *fl, FileInfo *fi, Track *track, const char* 
     int d = fileno(fp); 
      // Set the file descriptor to non-blocking
     fcntl(d, F_SETFL, O_NONBLOCK);
-    
+    // TODO Doesn't actually abort the extraction process which silently finishes in the background.
     while (extractorAborted == 0) {
         int ch = getch();
         if(ch == 27) {
