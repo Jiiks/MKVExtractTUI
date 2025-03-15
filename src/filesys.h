@@ -36,7 +36,6 @@ typedef struct {
     size_t capacity;
 } FileList;
 
-
 /// @brief Scan a directory for files.
 /// @param path path to scan.
 /// @param filter only return files with specified extension.

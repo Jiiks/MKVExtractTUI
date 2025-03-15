@@ -7,7 +7,6 @@
 #include <ncurses.h>
 #include "guiextract.h"
 
-
 WINDOW *extractWin;
 WINDOW *extractWinPad;
 int extractPadPos = 0;
@@ -61,6 +60,7 @@ void drawProgressBarAsci(int y, int x, int width, int progress) {
     mvwprintw(extractWin, y, x, "[%s]", progressBar);
     wrefresh(extractWin);
 }
+
 void drawProgressBar(int y, int x, int width, int progress) {
     if (width < 2) width = 2;
     if (width <= 0 || progress < 0 || progress > 100) return;
@@ -101,8 +101,6 @@ void drawProgressBar(int y, int x, int width, int progress) {
 
     wrefresh(extractWin);
 }
-
-
 
 void guiExtractUpdate(FileList *fl, const int aborted) {
     totalProg = 0;

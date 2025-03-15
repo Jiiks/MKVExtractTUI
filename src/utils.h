@@ -37,4 +37,4 @@ bool utilsGetCwd(char *cwd, size_t size) {
     return false;
 }
 
-#endif
+#endif // UTILS_H
