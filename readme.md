@@ -39,7 +39,7 @@ Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/Mkv
 - Support for other than srt
 - Confirm overwrite
 - Extractor screen automatic scrolling
-- Extractor total progress/finished prompt
+- Extractor total progress/finished prompt :heavy_check_mark:
 - Multi track extract with tracks 1:1.srt 2:2.srt 3:3.srt
 
 ## Dependencies
