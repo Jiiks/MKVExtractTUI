@@ -7,6 +7,8 @@
 #include "guimain.h"
 #include <signal.h>
 #include <ncurses.h>
+#include "guiextract.h"
+#include "extractor.h"
 
 #define SIDEBAR_RATIO 4
 #define SIDEBAR_MIN_WIDTH 30
@@ -111,6 +113,7 @@ void initNcurses() {
     cbreak();               // Disables line buffering and erase/kill character-processing 
     curs_set(0);            // Disable cursor
     keypad(stdscr, TRUE);   // Enable keyboard input
+    nodelay(stdscr, TRUE);  // Enable non-blocking input
 }
 
 void guiMainInit(const char *title, FileList *fileList) {
@@ -266,7 +269,7 @@ void guiMainUpdateMain() {
         wclear(ctx.mainPad);
         for(int i = 0 ; i < fi->trackCount ; i++) {
             Track track = fi->tracks[i];
-            
+
             char df[256];
             displayFlags(track.Flags, df);
      
@@ -377,8 +380,46 @@ void guiMainCheck(int mode) {
 
     guiMainUpdateMain();
 }
+volatile int aborted = 0;
+void extractorCb(FileList *fl, FileInfo *fi, Track *track, int screenIdx, int abort) {
+    guiExtractUpdateAt(screenIdx, fi, track, abort);
+}
+
+void guiMainExtract(ExtractFinished cb) {
+    aborted = 0;
+    extractorInit();
+    FileList *fl = ctx.fileList;
+    guiExtractInit(ctx.fileList);
+    int screenIdx = 0;
+    int trackCount = fl->files[0].trackCount;
+    for(int i = 0 ; i < trackCount ; i++) {
+        if(getch() == 27) aborted = 1;
+        if(aborted != 0) break;
+        FileInfo *fi = &fl->files[0];
+        Track *track = &fi->tracks[i];
+        if(track->Extract) {
+           extractorExtractTrack(fl, fi, track, fi->name, screenIdx, extractorCb);
+           screenIdx++;
+        }
+    }
+
+    if(cb) cb();
+}
+
+void guiMainAbortExtract(ExtractFinished cb) {
+    aborted = 1;
+    extractorAbort();
+    if(cb) cb();
+}
+
+void guiMainBackSpace() {
+    guiExtractClean();
+    guiMainUpdate();
+}
 
 void guiMainClean() {
+    guiExtractClean();
+
     if(ctx.sidebarPad != NULL) {
         delwin(ctx.sidebarPad);
         ctx.sidebarPad = NULL;

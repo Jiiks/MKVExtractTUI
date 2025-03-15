@@ -13,6 +13,13 @@
 #include <pthread.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <ncurses.h>
+
+volatile int extractorAborted = 0;
+
+void extractorInit() {
+    extractorAborted = 0;
+}
 
 int extractorExtractTrack(FileList *fl, FileInfo *fi, Track *track, const char* fileName, int screenIdx, ExtractorProgressUpdate cb) {
     char command[4096];
@@ -31,7 +38,12 @@ int extractorExtractTrack(FileList *fl, FileInfo *fi, Track *track, const char* 
      // Set the file descriptor to non-blocking
     fcntl(d, F_SETFL, O_NONBLOCK);
     
-    while (1) {
+    while (extractorAborted == 0) {
+        int ch = getch();
+        if(ch == 27) {
+            extractorAborted = 1;
+            break;
+        }
         // Read data into buffer
         ssize_t r = read(d, buf, sizeof(buf)); 
         if (r == -1) {
@@ -54,7 +66,7 @@ int extractorExtractTrack(FileList *fl, FileInfo *fi, Track *track, const char* 
                     *percentSign = '\0';
                     int x = atoi(pstr);
                     track->ExtractProgress = x;
-                    if(cb) cb(fl, fi, track, screenIdx);
+                    if(cb) cb(fl, fi, track, screenIdx, extractorAborted);
                 }
             }
         } else {
@@ -63,7 +75,12 @@ int extractorExtractTrack(FileList *fl, FileInfo *fi, Track *track, const char* 
     }
 
     pclose(fp);
-    track->ExtractProgress = 100;
-    if(cb) cb(fl, fi, track, screenIdx);
+    if(!extractorAborted)
+        track->ExtractProgress = 100;
+    if(cb) cb(fl, fi, track, screenIdx, extractorAborted);
     return 0;
+}
+
+void extractorAbort() {
+    extractorAborted = 1;
 }

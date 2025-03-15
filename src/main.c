@@ -12,6 +12,8 @@
 #include "utils.h"
 #include "guimain.h"
 
+int state = 0;
+
 // Some command line args
 int argHandler(int argc, char *argv[]) {
     for (int i = 1; i < argc; ++i) {
@@ -53,7 +55,15 @@ int argHandler(int argc, char *argv[]) {
     return 1;
 }
 
+void extractFinished() {
+    state = 2;
+    while (getch() != ERR); // Clear the buffer
+    usleep(10000);
+}
+
 int main(int argc, char *argv[]) {
+
+
     if(argc > 1 && argHandler(argc, argv) == 0) return 0;
     
     if(system("which mkvinfo > /dev/null 2>&1")) {
@@ -97,10 +107,32 @@ int main(int argc, char *argv[]) {
     guiMainUpdate();
 
     int ch;
-    while(1) {
+    while (1) {
+
         ch = getch();
-        if(ch == 'q') break;
-        switch(ch) {
+        if (ch == ERR) {
+            usleep(10000);
+            continue;
+        }
+        if (ch == 27) { // ESC key
+            break;
+            guiMainAbortExtract(extractFinished);
+            state = 2;
+            continue; // Immediately continue the loop after abort
+        }
+
+        if(state == 2) {
+            if(ch == KEY_BACKSPACE) {
+                guiMainBackSpace();
+                state = 0;
+            }
+            usleep(10000);
+            continue;
+        }
+
+        if (ch == 'q') break;
+
+        switch (ch) {
             case KEY_PPAGE:
                 guiSidebarSelect(-1);
                 break;
@@ -127,11 +159,15 @@ int main(int argc, char *argv[]) {
                 break;
             case KEY_ENTER:
             case 10:
-                // Extract
+                state = 1;
+                guiMainExtract(extractFinished); // Start extraction
+                break;
+            case KEY_BACKSPACE:
+                guiMainBackSpace();
                 break;
         }
-
     }
+
     fsCleanup();
     guiMainClean();
     fsFreeList(&fl);

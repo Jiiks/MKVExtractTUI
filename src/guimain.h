@@ -9,6 +9,8 @@
 
 #include "filesys.h"
 
+typedef void (*ExtractFinished)();
+
 /// @brief Initialize main gui
 /// @param title  Title for main gui
 /// @param fileList Filelist to display
@@ -44,5 +46,10 @@ int guiGetMainIndex();
 
 /// @brief Check selected track
 void guiMainCheck(int mode);
+
+void guiMainExtract(ExtractFinished cb);
+void guiMainAbortExtract(ExtractFinished cb);
+
+void guiMainBackSpace();
 
 #endif // GUIMAIN_H
