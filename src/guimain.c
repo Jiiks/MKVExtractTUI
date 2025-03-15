@@ -392,16 +392,19 @@ void guiMainExtract(ExtractFinished cb) {
     guiExtractInit(ctx.fileList);
     int screenIdx = 0;
     int trackCount = fl->files[0].trackCount;
-    for(int i = 0 ; i < trackCount ; i++) {
-        if(getch() == 27) aborted = 1;
-        if(aborted != 0) break;
-        FileInfo *fi = &fl->files[0];
-        Track *track = &fi->tracks[i];
-        if(track->Extract) {
-           extractorExtractTrack(fl, fi, track, fi->name, screenIdx, extractorCb);
-           screenIdx++;
+    for(int f = 0 ; f < (int)fl->size ; f++) {
+        for(int i = 0 ; i < trackCount ; i++) {
+            if(getch() == 27) aborted = 1;
+            if(aborted != 0) break;
+            FileInfo *fi = &fl->files[f];
+            Track *track = &fi->tracks[i];
+            if(track->Extract) {
+               extractorExtractTrack(fl, fi, track, fi->name, screenIdx, extractorCb);
+               screenIdx++;
+            }
         }
     }
+    
 
     if(cb) cb();
 }
