@@ -431,15 +431,34 @@ void guiMainExtract(ExtractFinished cb) {
 
     extractorInit();
     guiExtractInit(ctx.fileList);
+
+    // TODO Extractor scrolling
+
     int screenIdx = 0;
-    int trackCount = fl->files[0].trackCount;
     for(int f = 0 ; f < (int)fl->size ; f++) {
+        int trackCount = fl->files[f].trackCount;
+        for(int i = 0 ; i < trackCount ; i++) {
+            FileInfo *fi = &fl->files[f];
+            Track *track = &fi->tracks[i];
+            if(track->Extract) {
+                // First update all to extract
+                extractorCb(fl, fi, track, screenIdx, 0);
+                //extractorExtractTrack(fl, fi, track, fi->name, screenIdx, extractorCb);
+                screenIdx++;
+            }
+        }
+    }
+
+    screenIdx = 0;
+    for(int f = 0 ; f < (int)fl->size ; f++) {
+        int trackCount = fl->files[f].trackCount;
         for(int i = 0 ; i < trackCount ; i++) {
             if(getch() == 27) aborted = 1;
             if(aborted != 0) break;
             FileInfo *fi = &fl->files[f];
             Track *track = &fi->tracks[i];
             if(track->Extract) {
+                //Re do the loop with extract
                extractorExtractTrack(fl, fi, track, fi->name, screenIdx, extractorCb);
                screenIdx++;
             }
