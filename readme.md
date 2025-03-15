@@ -1,13 +1,12 @@
 
 # Mkv(Sub)ExtractTUI
-## Currently does not extract since this just a git init.
-  
 
 Mkv(Sub)ExtractTUI is a terminal-based user interface for extracting subtitles from MKV containers.
 
 - Currently only supports srt subtitles but I'll add support for others momentarily.
 
-![alt text](image.png)
+![gif](https://github.com/user-attachments/assets/65053a8a-cfd2-4f8a-a5c0-2bacc802fe32)
+
 
 ## Features
 
