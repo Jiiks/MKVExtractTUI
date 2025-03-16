@@ -18,7 +18,7 @@ jobs:
       - name: Define version
         id: define_version
         run: |
-          echo "VERSION=v0.1.1a" >> $GITHUB_ENV
+          echo "VERSION=v0.1.2a" >> $GITHUB_ENV
 
       - name: Build project
         run: make build
