@@ -27,6 +27,7 @@ jobs:
           regex: "/^Release: v\\d+\\.\\d+\\.\\d+[a-zA-Z]?$/i"
           changelog: "CHANGELOG"
           changelog-entry: "v0.1.1a"
+          files: "bin/mvkextracttui"
         env:
           ACTIONS_STEP_DEBUG: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
