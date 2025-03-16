@@ -4,6 +4,7 @@ on:
   push:
     branches: [ master ]
 env:
+  TEST: 1
 
 jobs:
   release:
