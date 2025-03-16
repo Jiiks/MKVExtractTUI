@@ -114,6 +114,10 @@ void initNcurses() {
     curs_set(0);            // Disable cursor
     keypad(stdscr, TRUE);   // Enable keyboard input
     nodelay(stdscr, TRUE);  // Enable non-blocking input
+
+    // Progress bar colors
+    init_pair(5, COLOR_WHITE, COLOR_CYAN);
+    init_pair(6, COLOR_BLACK, COLOR_WHITE);
 }
 
 void guiMainInit(const char *title, FileList *fileList) {
@@ -429,6 +433,7 @@ void guiMainExtract(ExtractFinished cb) {
 
     }
 
+    guiExtractClean();
     extractorInit();
     guiExtractInit(ctx.fileList);
 
@@ -442,13 +447,14 @@ void guiMainExtract(ExtractFinished cb) {
             Track *track = &fi->tracks[i];
             if(track->Extract) {
                 // First update all to extract
+                track->ExtractProgress = 0;
                 extractorCb(fl, fi, track, screenIdx, 0);
                 //extractorExtractTrack(fl, fi, track, fi->name, screenIdx, extractorCb);
                 screenIdx++;
             }
         }
     }
-
+    guiExtractUpdate(ctx.fileList, 0);
     screenIdx = 0;
     for(int f = 0 ; f < (int)fl->size ; f++) {
         int trackCount = fl->files[f].trackCount;

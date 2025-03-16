@@ -62,8 +62,6 @@ void extractFinished() {
 }
 
 int main(int argc, char *argv[]) {
-
-
     if(argc > 1 && argHandler(argc, argv) == 0) return 0;
     
     if(system("which mkvinfo > /dev/null 2>&1")) {
@@ -108,7 +106,6 @@ int main(int argc, char *argv[]) {
 
     int ch;
     while (1) {
-
         ch = getch();
         if (ch == ERR) {
             usleep(10000);

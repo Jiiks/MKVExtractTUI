@@ -5,8 +5,10 @@ Mkv(Sub)ExtractTUI is a terminal-based user interface for extracting subtitles f
 
 - Currently only supports srt subtitles but I'll add support for others momentarily.
 
-![gif](https://github.com/user-attachments/assets/65053a8a-cfd2-4f8a-a5c0-2bacc802fe32)
+Progressbar as of 0.1.1a
+![gif2](https://github.com/user-attachments/assets/cbb9d6ea-2412-458d-b6b2-14e12c9c0a32)
 
+![gif](https://github.com/user-attachments/assets/65053a8a-cfd2-4f8a-a5c0-2bacc802fe32)
 
 ## Features
 
@@ -37,7 +39,8 @@ Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/Mkv
 - Support for other than srt
 - Confirm overwrite
 - Extractor screen automatic scrolling
-- Extractor total progress/finished prompt
+- Extractor total progress/finished prompt :heavy_check_mark:
+- Multi track extract with tracks 1:1.srt 2:2.srt 3:3.srt
 
 ## Dependencies
 
