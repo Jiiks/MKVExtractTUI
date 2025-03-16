@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "config.h"
 
 // TODO missing some codecs
 const char *trackCodecNames[5] = {
@@ -44,8 +45,11 @@ void appendFlag(char *flags, const char *append, size_t size) {
 /// @brief Checks if track should be auto checked based on language configs.
 /// @param track Track to check
 void trackAutoCheck(Track *track) {
-    // Default config = en,eng
-    if(strstr(track->Language, "eng")) track->Extract = true;
+    char l[5];
+    strncpy(l, track->Language, 3);
+    l[3] = ',';
+    l[4] = '\0';
+    if(strstr(g_cfg.lang, l) != NULL) track->Extract = true;
 }
 
 Track trackParseJson(cJSON *json) {
@@ -138,7 +142,7 @@ void trackResolveNewName(const char *fileName, Track *track) {
     removeExt(buffer);
 
     // Start with the format directly in track->NewName
-    strcpy(track->NewName, "fn.flags.lang.ext");
+    strcpy(track->NewName, g_cfg.format);
 
     // Replace "fn" in format with the filename
     while ((pos = strstr(track->NewName, "fn")) != NULL) {

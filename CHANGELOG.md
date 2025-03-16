@@ -5,3 +5,8 @@
   - Added progressbar and other minor changes.
 ### Fixed
   - Test
+## v0.1.2a
+### Changed
+  - Command line args parsing.
+  - Actually use config values.
+  

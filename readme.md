@@ -1,4 +1,6 @@
 
+[![Build and Test](https://github.com/Jiiks/MKVExtractTUI/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/Jiiks/MKVExtractTUI/actions/workflows/cmake-single-platform.yml) [![AutoRelease](https://github.com/Jiiks/MKVExtractTUI/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/Jiiks/MKVExtractTUI/actions/workflows/build-and-release.yml)
+
 # Mkv(Sub)ExtractTUI
 
 Mkv(Sub)ExtractTUI is a terminal-based user interface for extracting subtitles from MKV containers.
@@ -25,8 +27,10 @@ Download from releases as binary.
 To launch Mkv(Sub)ExtractTUI, simply run the binary.
 
 Custom input directory:
-`mkvextracttui -i "path"`
+`mkvetui -i "path"`
 otherwise current working directory is used.
+
+`mkvetui -h` for help.
 
 also can be run guiless with either `guiless=true` in config or `-nogui`
 When done so all subtitles that are configured to be auto checked will be extracted automatically.
@@ -34,7 +38,8 @@ When done so all subtitles that are configured to be auto checked will be extrac
 Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/MkvExtractTUI`
 
 ## TODO
-- Most of the command line options
+- Most of the command line options :heavy_check_mark:
+- Guiless mode
 - Settings store
 - Support for other than srt
 - Confirm overwrite
@@ -51,7 +56,7 @@ Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/Mkv
 You can install the dependencies using your package manager. For example, on Debian-based systems:
 
 ```bash
-sudo apt-get install ncurses mkvtoolnix
+sudo apt-get install libncurses5-dev mkvtoolnix
 ```
 
 ## Bulding
@@ -68,6 +73,10 @@ make bar #(build and run)
 ## Contributing
 
 Contributions are welcome! If you find a bug or have a feature request, please open an issue on the GitHub repository. For code contributions, please fork the repository and submit a pull request.
+
+Use either the `dev` or the latest version branch eg. `0.1.2`. Preferably `dev` but it might lag behind the latest version.
+Also if relevant document your changes in `CHANGELOG.md`.
+Generally when changes are made to the latest version branch they're immediately merged into `dev`.
 
 ## License
 

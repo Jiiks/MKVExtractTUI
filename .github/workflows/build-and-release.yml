@@ -3,6 +3,7 @@ name: AutoRelease
 on:
   push:
     branches: [ master ]
+env:
 
 jobs:
   release:
@@ -18,7 +19,7 @@ jobs:
       - name: Define version
         id: define_version
         run: |
-          echo "VERSION=v0.1.1a" >> $GITHUB_ENV
+          echo "VERSION=v0.1.2a" >> $GITHUB_ENV
 
       - name: Build project
         run: make build
@@ -26,7 +27,7 @@ jobs:
       - name: Extract changelog for release notes
         id: extract_changelog
         run: |
-          RELEASE_NOTES=$(awk "/^[[:space:]]*## ${{ env.VERSION }}/{flag=1;next}/^[[:space:]]*## /{flag=0}flag" CHANGELOG)
+          RELEASE_NOTES=$(awk "/^[[:space:]]*## ${{ env.VERSION }}/{flag=1;next}/^[[:space:]]*## /{flag=0}flag" CHANGELOG.md)
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -54,8 +55,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bin/mkvextracttui  # Path to your binary
-          asset_name: mkvextracttui      # Name the binary for the release
+          asset_path: bin/mkvetui  # Path to your binary
+          asset_name: mkvetui      # Name the binary for the release
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
