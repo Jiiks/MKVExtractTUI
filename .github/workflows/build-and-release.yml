@@ -21,8 +21,8 @@ jobs:
       - name: Create release
         uses: CupOfTea696/gh-action-auto-release@v1.0.2
         with:
-          title: "Release: $version"
-          tag: "v$semver"
+          title: "Release: v0.1.1a"
+          tag: "v0.1.1a"
           draft: false
           regex: "/^Release: v\\d+\\.\\d+\\.\\d+[a-zA-Z]?$/i"
           changelog: "CHANGELOG"
