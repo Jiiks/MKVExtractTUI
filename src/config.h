@@ -24,6 +24,9 @@
 typedef struct {
     char autoCheck[100];        // Languages to auto check. Default: "en,eng"
     bool noGui;                 // Run guiless? Default: false
+    bool quiet;                 // Suppress output.
+    bool autoCheckAll;          // Autocheck all tracks.
+    char lang[100];             // Language tags to check.
     char format[100];           // File renaming format. Default: fn.flags.lang.ext eg. Movie.sdh.en.srt
     char rootPath[PATH_MAX];    // Root path for config. Should be (~/.config|/home/user/.config)/MkvExtractTUI
     char configPath[PATH_MAX];  // Config file path. rootpath/config.cfg
@@ -38,5 +41,7 @@ extern Config g_cfg;
 /// Config initializer. Resets config to default values and resolves paths.
 /// @return true if success. false if fail.
 bool cfgInit();
+void cfgParseArgs(int argc, char *argv[]);
+void cfgPrintDbg();
 
 #endif // CONFIG_H

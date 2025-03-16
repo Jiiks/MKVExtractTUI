@@ -81,12 +81,8 @@ int main(int argc, char *argv[]) {
     // Get current directory
     if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 0;
     // Custom input directory
-    if(argc > 2) {
-        if(strcmp(argv[1], "-i") == 0 || strcmp(argv[1], "--input")) {
-            strcpy(g_cfg.wd, argv[2]);
-        }
-    }
-
+    cfgParseArgs(argc, argv);
+    
     char title[48];
     snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
 

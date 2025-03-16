@@ -7,5 +7,5 @@
   - Test
 ## v0.1.2a
 ### Changed
-  - Nothing yet
+  - Command line args parsing.
   
