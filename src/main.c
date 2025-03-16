@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     // Custom input directory
     if(argc > 2)
         if(!cfgParseArgs(argc, argv)) return 1;
-    cfgPrintDbg();
+    //cfgPrintDbg();
 
     char title[48];
     snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
