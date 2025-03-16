@@ -24,7 +24,7 @@ jobs:
           title: "Release: v0.1.1a"
           tag: "v0.1.1a"
           draft: false
-          regex: "/^Release: #{semver}$/i"
+          regex: "/^Release: v\\d+\\.\\d+\\.\\d+[a-zA-Z]?$/i"
           changelog: "CHANGELOG"
           changelog-entry: "v0.1.1a"
         env:
