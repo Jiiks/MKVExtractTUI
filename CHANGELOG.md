@@ -13,4 +13,5 @@
 ### Changed
   - Nothing
 ### Fixed
-  - Multifile progressbar updating
+  - Multifile progressbar updating.
+  - Correct default auto check.
