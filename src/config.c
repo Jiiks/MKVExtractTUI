@@ -63,8 +63,7 @@ bool cfgInit() {
     return true;
 }
 
-void cfgParseArgs(int argc, char *argv[]) {
-    if(argc <= 2) return;
+bool cfgParseArgs(int argc, char *argv[]) {
     for(int i = 1 ; i < argc ; i++) {
         if(strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--nogui") == 0) {
             g_cfg.noGui = true;
@@ -85,12 +84,24 @@ void cfgParseArgs(int argc, char *argv[]) {
             strcpy(g_cfg.wd, argv[i+1]);
         }
         if(strcmp(argv[i], "-p")  == 0 || strcmp(argv[i], "--pattern") == 0) {
+            if(strlen(argv[i+1]) > sizeof(g_cfg.format) - 2) {
+                printf("Pattern is too long!%s\n", argv[i+1]);
+                return false;
+            }
             strncpy(g_cfg.format, argv[i+1], sizeof(g_cfg.format) - 1);
+            g_cfg.format[sizeof(g_cfg.format) - 1] = '\0';
         }
         if(strcmp(argv[i], "-l")  == 0 || strcmp(argv[i], "--lang") == 0) {
-            strncpy(g_cfg.lang, argv[i+1], sizeof(g_cfg.lang) - 1);
+            if(strlen(argv[i+1]) > sizeof(g_cfg.lang) - 2) {
+                printf("Lang is too long!%s\n", argv[i+1]);
+                return false;
+            }
+            strncpy(g_cfg.lang, argv[i+1], sizeof(g_cfg.lang) - 2);
+            g_cfg.lang[strlen(argv[i+1])] = ','; // add another , for comparison
+            g_cfg.lang[sizeof(g_cfg.lang) - 1] = '\0';
         }
     }
+    return true;
 }
 
 void cfgPrintDbg() {

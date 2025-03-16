@@ -41,7 +41,7 @@ extern Config g_cfg;
 /// Config initializer. Resets config to default values and resolves paths.
 /// @return true if success. false if fail.
 bool cfgInit();
-void cfgParseArgs(int argc, char *argv[]);
+bool cfgParseArgs(int argc, char *argv[]);
 void cfgPrintDbg();
 
 #endif // CONFIG_H
