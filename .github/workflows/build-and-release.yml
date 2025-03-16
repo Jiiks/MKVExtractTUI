@@ -21,8 +21,9 @@ jobs:
       - name: Extract changelog for release notes
         id: extract_changelog
         run: |
-          # Extract the latest version entry from CHANGELOG
-          RELEASE_NOTES=$(sed -n '/## v0.1.1a/,/## v/p' CHANGELOG | sed '$d')
+          # Extract changelog section for the current version
+          VERSION="v0.1.1a"
+          RELEASE_NOTES=$(sed -n "/## $VERSION/,/^## /p" CHANGELOG | sed '1d;$d')
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
