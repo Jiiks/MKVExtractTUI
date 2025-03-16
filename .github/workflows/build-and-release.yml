@@ -21,9 +21,8 @@ jobs:
       - name: Extract changelog for release notes
         id: extract_changelog
         run: |
-          VERSION="v0.1.1a"
-          # Extract lines between the current version header and the next header
-          RELEASE_NOTES=$(awk "/## $VERSION/{flag=1;next}/## /{flag=0}flag" CHANGELOG)
+          VERSION="v0.1.1a" # Define the version you want to extract
+          RELEASE_NOTES=$(awk "/^[[:space:]]*## $VERSION/{flag=1;next}/^[[:space:]]*## /{flag=0}flag" CHANGELOG)
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
