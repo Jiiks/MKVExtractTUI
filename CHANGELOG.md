@@ -8,4 +8,5 @@
 ## v0.1.2a
 ### Changed
   - Command line args parsing.
+  - Actually use config values.
   
