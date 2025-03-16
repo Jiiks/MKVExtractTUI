@@ -18,14 +18,25 @@ jobs:
       - name: Build project
         run: make build
 
+      - name: Extract changelog for release notes
+        id: extract_changelog
+        run: |
+          # Extract the latest version entry from CHANGELOG
+          RELEASE_NOTES=$(sed -n '/## v0.1.1a/,/## v/p' CHANGELOG | sed '$d')
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "${RELEASE_NOTES}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Debug release notes
+        run: echo "$RELEASE_NOTES"
+
       - name: Create release
         id: create_release  # Assign an ID to reference the output
         uses: actions/create-release@v1
         with:
           tag_name: "v0.1.1a"
           release_name: "Release v0.1.1a"
-          body: |
-            See CHANGELOG for details.
+          body: ${{ env.RELEASE_NOTES }}
           draft: false
           prerelease: false
         env:
