@@ -14,12 +14,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - name: Set up build environment
         run: sudo apt-get update && sudo apt-get install -y gcc make libncurses5-dev
       - name: Build project
         run: make build
-        
       - uses: CupOfTea696/gh-action-auto-release@v1.0.0
         with:
           title: "Release: $version"
