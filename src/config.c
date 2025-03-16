@@ -16,7 +16,7 @@ Config g_cfg;
 
 // Reset config to default values
 bool reset() {
-    strcpy(g_cfg.autoCheck, "en,eng,");
+    strcpy(g_cfg.autoCheck, "en,eng");
     strcpy(g_cfg.format, "fn.flags.lang.ext");
     g_cfg.noGui = false;
     g_cfg.quiet = false;
