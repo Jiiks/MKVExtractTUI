@@ -3,6 +3,7 @@ name: AutoRelease
 on:
   push:
     branches: [ master ]
+env:
 
 jobs:
   release:
