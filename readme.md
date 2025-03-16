@@ -72,6 +72,7 @@ make bar #(build and run)
 Contributions are welcome! If you find a bug or have a feature request, please open an issue on the GitHub repository. For code contributions, please fork the repository and submit a pull request.
 
 Use either the `dev` or the latest version branch eg. `0.1.2`. Preferably `dev` but it might lag behind the latest version.
+Generally when changes are made to the latest version branch they're immediately merged into `dev`.
 
 ## License
 
