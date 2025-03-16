@@ -31,10 +31,15 @@ jobs:
           ACTIONS_STEP_DEBUG: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Format upload_url
+        id: format_upload_url
+        run: |
+          echo "UPLOAD_URL=$(echo '${{ steps.create_release.outputs.upload_url }}' | sed 's/{.*//')" >> $GITHUB_ENV
+
       - name: Upload binary to release
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ env.UPLOAD_URL }}
           asset_path: bin/mkvextracttui
           asset_name: mkvetui
           asset_content_type: application/octet-stream
