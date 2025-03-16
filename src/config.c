@@ -16,7 +16,7 @@ Config g_cfg;
 
 // Reset config to default values
 bool reset() {
-    strcpy(g_cfg.autoCheck, "en,eng");
+    strcpy(g_cfg.autoCheck, "en,eng,");
     strcpy(g_cfg.format, "fn.flags.lang.ext");
     g_cfg.noGui = false;
     g_cfg.quiet = false;
@@ -105,6 +105,11 @@ bool cfgParseArgs(int argc, char *argv[]) {
 }
 
 void cfgPrintDbg() {
+    char l[4];
+    strncpy(l, "eng", 3);
+    l[3] = ',';
+    if(strstr("en,eng,rus", l) != NULL) printf("Found!\n");
+    printf("%s\n", l);
     printf("NoGui:%d, Quiet:%d, AutoAll:%d\nFormat:%s\nLang:%s\nRoot:%s\nCfgPath:%s\nCWD:%s\nWD:%s", 
         g_cfg.noGui,
         g_cfg.quiet,
