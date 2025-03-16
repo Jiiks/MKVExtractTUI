@@ -15,14 +15,18 @@ jobs:
       - name: Set up build environment
         run: sudo apt-get update && sudo apt-get install -y gcc make libncurses5-dev
 
+      - name: Define version
+        id: define_version
+        run: |
+          echo "VERSION=v0.1.1a" >> $GITHUB_ENV
+
       - name: Build project
         run: make build
 
       - name: Extract changelog for release notes
         id: extract_changelog
         run: |
-          VERSION="v0.1.1a" # Define the version you want to extract
-          RELEASE_NOTES=$(awk "/^[[:space:]]*## $VERSION/{flag=1;next}/^[[:space:]]*## /{flag=0}flag" CHANGELOG)
+          RELEASE_NOTES=$(awk "/^[[:space:]]*## ${{ env.VERSION }}/{flag=1;next}/^[[:space:]]*## /{flag=0}flag" CHANGELOG)
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -34,8 +38,8 @@ jobs:
         id: create_release  # Assign an ID to reference the output
         uses: actions/create-release@v1
         with:
-          tag_name: "v0.1.1a"
-          release_name: "Release v0.1.1a"
+          tag_name: ${{ env.VERSION }}
+          release_name: "Release ${{ env.VERSION }}"
           body: ${{ env.RELEASE_NOTES }}
           draft: false
           prerelease: false
