@@ -9,4 +9,8 @@
 ### Changed
   - Command line args parsing.
   - Actually use config values.
-  
+## v0.1.3a
+### Changed
+  - Nothing
+### Fixed
+  - Multifile progressbar updating

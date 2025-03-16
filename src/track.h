@@ -40,6 +40,7 @@ typedef struct {
     int ExtractProgress;    // Extraction progress %
     bool IsSubTrack;        // Is a subtitle track.
     bool Extract;           // Should extract?
+    bool Extracted;         // Has been extracted?
     bool Forced;            // Is the track forced
     bool Default;           // Is the track default
     bool ClosedCaptions;    // Is closed captions
