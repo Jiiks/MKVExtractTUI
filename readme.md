@@ -28,6 +28,8 @@ Custom input directory:
 `mkvextracttui -i "path"`
 otherwise current working directory is used.
 
+`mkvextracttui -h` for help.
+
 also can be run guiless with either `guiless=true` in config or `-nogui`
 When done so all subtitles that are configured to be auto checked will be extracted automatically.
 
@@ -51,7 +53,7 @@ Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/Mkv
 You can install the dependencies using your package manager. For example, on Debian-based systems:
 
 ```bash
-sudo apt-get install ncurses mkvtoolnix
+sudo apt-get install libncurses5-dev mkvtoolnix
 ```
 
 ## Bulding
@@ -68,6 +70,8 @@ make bar #(build and run)
 ## Contributing
 
 Contributions are welcome! If you find a bug or have a feature request, please open an issue on the GitHub repository. For code contributions, please fork the repository and submit a pull request.
+
+Use either the `dev` or the latest version branch eg. `0.1.2`. Preferably `dev` but it might lag behind the latest version.
 
 ## License
 

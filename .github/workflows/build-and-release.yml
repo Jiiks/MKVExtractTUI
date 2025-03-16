@@ -18,7 +18,7 @@ jobs:
       - name: Define version
         id: define_version
         run: |
-          echo "VERSION=v0.1.1a" >> $GITHUB_ENV
+          echo "VERSION=v0.1.2a" >> $GITHUB_ENV
 
       - name: Build project
         run: make build
@@ -26,7 +26,7 @@ jobs:
       - name: Extract changelog for release notes
         id: extract_changelog
         run: |
-          RELEASE_NOTES=$(awk "/^[[:space:]]*## ${{ env.VERSION }}/{flag=1;next}/^[[:space:]]*## /{flag=0}flag" CHANGELOG)
+          RELEASE_NOTES=$(awk "/^[[:space:]]*## ${{ env.VERSION }}/{flag=1;next}/^[[:space:]]*## /{flag=0}flag" CHANGELOG.md)
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV

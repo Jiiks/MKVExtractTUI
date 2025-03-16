@@ -18,3 +18,4 @@ valgrind-out.txt
 bin/
 obj/
 old/
+changelog.sh

@@ -7,7 +7,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define MKVE_VERSION "0.1.1a"
+#define MKVE_VERSION "0.1.2a"
 #define MKVE_WINDOW_TITLE "MKV(Sub)Extract Terminal UI"
 #define MKVE_REPO "https://github.com/jiiks/MKVExtractTUI"
 #define MKVE_ISSUES "https://github.com/jiiks/MKVExtractTUI/issues"
