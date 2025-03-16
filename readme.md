@@ -1,4 +1,6 @@
 
+[![Build and Test](https://github.com/Jiiks/MKVExtractTUI/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/Jiiks/MKVExtractTUI/actions/workflows/cmake-single-platform.yml) [![AutoRelease](https://github.com/Jiiks/MKVExtractTUI/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/Jiiks/MKVExtractTUI/actions/workflows/build-and-release.yml)
+
 # Mkv(Sub)ExtractTUI
 
 Mkv(Sub)ExtractTUI is a terminal-based user interface for extracting subtitles from MKV containers.
