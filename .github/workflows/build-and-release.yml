@@ -31,10 +31,16 @@ jobs:
           ACTIONS_STEP_DEBUG: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug upload_url from create_release
+        run: |
+          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
+        
+
       - name: Format upload_url
         id: format_upload_url
         run: |
-          echo "UPLOAD_URL=$(echo '${{ steps.create_release.outputs.upload_url }}' | sed 's/{.*//')" >> $GITHUB_ENV
+          CLEANED_URL=$(echo "${{ steps.create_release.outputs.upload_url }}" | sed 's/{.*//')
+          echo "UPLOAD_URL=${CLEANED_URL}" >> $GITHUB_ENV
 
       - name: Debug upload_url
         run: |
