@@ -54,8 +54,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bin/mkvextracttui  # Path to your binary
-          asset_name: mkvextracttui      # Name the binary for the release
+          asset_path: bin/mkvetui  # Path to your binary
+          asset_name: mkvetui      # Name the binary for the release
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

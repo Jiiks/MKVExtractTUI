@@ -12,7 +12,7 @@ BINDIR = bin
 SRC = $(wildcard $(SRCDIR)/*.c)
 OBJ = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRC))
 
-BIN = mkvextracttui
+BIN = mkvetui
 
 # make <target> debug=1
 ifdef debug
@@ -44,7 +44,7 @@ reset:
 # Tests
 
 valgrind: 
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./bin/mkvextracttui -i $(TEST_PATH)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./bin/mkvetui -i $(TEST_PATH)
 
 TESTDIR = tests
 TESTSRC = $(filter-out $(SRCDIR)/main.c, $(wildcard $(SRCDIR)/*.c))

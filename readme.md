@@ -25,10 +25,10 @@ Download from releases as binary.
 To launch Mkv(Sub)ExtractTUI, simply run the binary.
 
 Custom input directory:
-`mkvextracttui -i "path"`
+`mkvetui -i "path"`
 otherwise current working directory is used.
 
-`mkvextracttui -h` for help.
+`mkvetui -h` for help.
 
 also can be run guiless with either `guiless=true` in config or `-nogui`
 When done so all subtitles that are configured to be auto checked will be extracted automatically.
