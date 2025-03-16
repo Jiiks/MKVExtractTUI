@@ -21,6 +21,7 @@ bool reset() {
     g_cfg.noGui = false;
     g_cfg.quiet = false;
     g_cfg.autoCheckAll = false;
+    g_cfg.fastUpdate = false;
     return true;
 }
 
@@ -75,6 +76,10 @@ bool cfgParseArgs(int argc, char *argv[]) {
         }
         if(strcmp(argv[i], "-a") == 0 || strcmp(argv[i], "--all") == 0) {
             g_cfg.autoCheckAll = true;
+            continue;
+        }
+        if(strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--fastupdate") == 0) {
+            g_cfg.fastUpdate = true;
             continue;
         }
 

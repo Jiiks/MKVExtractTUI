@@ -6,6 +6,7 @@
 
 #include <ncurses.h>
 #include "guiextract.h"
+#include "config.h"
 
 WINDOW *extractWin;
 WINDOW *extractWinPad;
@@ -192,8 +193,11 @@ void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track, const int abor
 
     if(extractedTracks >= totalTracksToExtract) totalProg = 100;
 
-    // Update total progress only when there's enough progress
-    if(totalProg >= 100 || totalProg >= lastProgUpdate + 5) {
+    if(g_cfg.fastUpdate) {
+        drawProgressBar(r - 8, 2, c - 9, totalProg);
+        wrefresh(extractWin);
+    }else if(totalProg >= 100 || totalProg >= lastProgUpdate + 8) {
+        // Update total progress only when there's enough progress
         drawProgressBar(r - 8, 2, c - 9, totalProg);
         wrefresh(extractWin);
     }

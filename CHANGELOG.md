@@ -11,7 +11,7 @@
   - Actually use config values.
 ## v0.1.3a
 ### Changed
-  - Nothing
+  - Add -f|--fastupdate command line for instantly updating gui.
 ### Fixed
   - Multifile progressbar updating.
   - Correct default auto check.
