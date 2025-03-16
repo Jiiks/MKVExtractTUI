@@ -6,6 +6,7 @@
 
 #include <ncurses.h>
 #include "guiextract.h"
+#include "config.h"
 
 WINDOW *extractWin;
 WINDOW *extractWinPad;
@@ -15,6 +16,7 @@ int lastProgUpdate = 0;
 int r = 0;
 int c = 0;
 int ln = 0;
+int extractedTracks = 0;
 int totalTracksToExtract = 0;
 
 void guiExtractInit(FileList *fl) {
@@ -25,6 +27,7 @@ void guiExtractInit(FileList *fl) {
     totalProg = 0;
     totalTracksToExtract = 0;
     lastProgUpdate = 0;
+    extractedTracks = 0;
 
     extractWin = newwin(row - 6, col - 4, 2, 3);
     box(extractWin, 0, 0);
@@ -37,6 +40,7 @@ void guiExtractInit(FileList *fl) {
     for(int f = 0 ; f < (int)fl->size ; f++) {
         for(int i = 0 ; i < fl->files[f].trackCount ; i++) {
             if(!fl->files[f].tracks[i].Extract) continue;
+            fl->files[f].tracks[i].Extracted = false;
             totalTracksToExtract++;
         }
     }
@@ -62,6 +66,12 @@ void drawProgressBarAsci(int y, int x, int width, int progress) {
 }
 
 void drawProgressBar(int y, int x, int width, int progress) {
+    // Debugging
+    //mvwprintw(extractWin, y, x + 1, "%d %d %d %d", lastProgUpdate, totalTracksToExtract, extractedTracks, progress);
+    //wrefresh(extractWin);
+    //return;
+
+    lastProgUpdate = progress;
     if (width < 2) width = 2;
     if (width <= 0 || progress < 0 || progress > 100) return;
 
@@ -103,7 +113,7 @@ void drawProgressBar(int y, int x, int width, int progress) {
 }
 
 void guiExtractUpdate(FileList *fl, const int aborted) {
-    totalProg = 0;
+    totalProg = extractedTracks * 100;
     int row, col;
     getmaxyx(stdscr, row, col);
     // TODO move this elsewhere
@@ -148,11 +158,16 @@ void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track, const int abor
     if(totalTracksToExtract <= 0) return; // This should never be called with 0 tracks but might as well.
 
     // TODO maybe a better way to update total progress.
-    totalProg = 0;
+    totalProg = extractedTracks * 100;
     for(int i = 0 ; i < fi->trackCount ; i++) {
         if(!fi->tracks[i].Extract) continue;
-        totalProg += fi->tracks[i].ExtractProgress;
+        if(!fi->tracks[i].Extracted && fi->tracks[i].ExtractProgress >= 100) {
+            fi->tracks[i].Extracted = true;
+            extractedTracks++;
+        }
+        else totalProg += fi->tracks[i].ExtractProgress;
     }
+
     totalProg /= totalTracksToExtract;
 
     if(track->ExtractProgress > 0 && track->ExtractProgress < 100) {
@@ -176,8 +191,13 @@ void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track, const int abor
     wattroff(extractWinPad, A_BLINK | A_BOLD | A_DIM);
     prefresh(extractWinPad, extractPadPos, 0, 3, 4, r - 7, c - 6);
 
-    // Update total progress only when there's enough progress
-    if(totalProg >= 100 || totalProg >= lastProgUpdate + 15) {
+    if(extractedTracks >= totalTracksToExtract) totalProg = 100;
+
+    if(g_cfg.fastUpdate) {
+        drawProgressBar(r - 8, 2, c - 9, totalProg);
+        wrefresh(extractWin);
+    }else if(totalProg >= 100 || totalProg >= lastProgUpdate + 8) {
+        // Update total progress only when there's enough progress
         drawProgressBar(r - 8, 2, c - 9, totalProg);
         wrefresh(extractWin);
     }
@@ -197,4 +217,5 @@ void guiExtractClean() {
     totalProg = 0;
     totalTracksToExtract = 0;
     lastProgUpdate = 0;
+    extractedTracks = 0;
 }

@@ -29,6 +29,7 @@ int argHandler(int argc, char *argv[]) {
             printf("  -l, --lang %*c Auto check all tracks matching language tags. Default: \"en,eng\"\n", 13, ' ');
             printf("  -a, --all %*c Auto check all tracks.\n", 14, ' ');
             printf("  -q, --quiet %*c Suppress output.\n", 12, ' ');
+            printf("  -f, --fastupdate %*c Fast update gui.\n", 7, ' ');
 
             printf("\n  --repo %*c Print repository url.\n", 17, ' ');
             printf("  --issues %*c Print issues url.\n", 15, ' ');

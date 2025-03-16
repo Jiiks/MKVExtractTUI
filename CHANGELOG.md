@@ -9,4 +9,9 @@
 ### Changed
   - Command line args parsing.
   - Actually use config values.
-  
+## v0.1.3a
+### Changed
+  - Add -f|--fastupdate command line for instantly updating gui.
+### Fixed
+  - Multifile progressbar updating.
+  - Correct default auto check.

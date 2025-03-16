@@ -7,7 +7,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define MKVE_VERSION "0.1.2a"
+#define MKVE_VERSION "0.1.3a"
 #define MKVE_WINDOW_TITLE "MKV(Sub)Extract Terminal UI"
 #define MKVE_REPO "https://github.com/jiiks/MKVExtractTUI"
 #define MKVE_ISSUES "https://github.com/jiiks/MKVExtractTUI/issues"
@@ -26,6 +26,7 @@ typedef struct {
     bool noGui;                 // Run guiless? Default: false
     bool quiet;                 // Suppress output.
     bool autoCheckAll;          // Autocheck all tracks.
+    bool fastUpdate;            // Fast gui update.
     char lang[100];             // Language tags to check.
     char format[100];           // File renaming format. Default: fn.flags.lang.ext eg. Movie.sdh.en.srt
     char rootPath[PATH_MAX];    // Root path for config. Should be (~/.config|/home/user/.config)/MkvExtractTUI
