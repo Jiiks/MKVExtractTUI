@@ -21,7 +21,7 @@ Progressbar as of 0.1.1a
 - **Multi-Track Support:** Extract multiple subtitle tracks simultaneously.
 
 ## Usage
-Download from releases as binary.(none yet)  
+Download from releases as binary.
 To launch Mkv(Sub)ExtractTUI, simply run the binary.
 
 Custom input directory:
