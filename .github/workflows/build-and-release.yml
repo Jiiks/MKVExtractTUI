@@ -36,6 +36,11 @@ jobs:
         run: |
           echo "UPLOAD_URL=$(echo '${{ steps.create_release.outputs.upload_url }}' | sed 's/{.*//')" >> $GITHUB_ENV
 
+      - name: Debug upload_url
+        run: |
+          echo "Upload URL is: $UPLOAD_URL"
+        
+
       - name: Upload binary to release
         uses: actions/upload-release-asset@v1
         with:
