@@ -26,6 +26,7 @@ jobs:
           draft: false
           regex: "/^Release: v\\d+\\.\\d+\\.\\d+[a-zA-Z]?$/i"
           changelog: "CHANGELOG"
+          changelog-entry: "v0.1.1a"
         env:
           ACTIONS_STEP_DEBUG: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
