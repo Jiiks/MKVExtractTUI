@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2  # Correctly defines the "uses" key
+        uses: actions/checkout@v2
 
       - name: Set up build environment
         run: sudo apt-get update && sudo apt-get install -y gcc make libncurses5-dev
@@ -21,10 +21,10 @@ jobs:
       - name: Create release
         uses: CupOfTea696/gh-action-auto-release@v1.0.0
         with:
-          title: "Release: $version"
-          tag: "v$semver"
+          title: "Release: v0.1.1a"
+          tag: "v0.1.1a"
           draft: false
           regex: "/^Release: #{semver}$/i"
-          changelog: "CHANGELOG.md"
+          changelog: "CHANGELOG"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
