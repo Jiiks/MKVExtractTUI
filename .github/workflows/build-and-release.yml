@@ -19,38 +19,26 @@ jobs:
         run: make build
 
       - name: Create release
-        uses: CupOfTea696/gh-action-auto-release@v1.0.2
+        id: create_release  # Assign an ID to reference the output
+        uses: actions/create-release@v1
         with:
-          title: "Release: v0.1.1a"
-          tag: "v0.1.1a"
+          tag_name: "v0.1.1a"
+          release_name: "Release v0.1.1a"
+          body: |
+            See CHANGELOG for details.
           draft: false
-          regex: "/^Release: v\\d+\\.\\d+\\.\\d+[a-zA-Z]?$/i"
-          changelog: "CHANGELOG"
-          changelog-entry: "v0.1.1a"
+          prerelease: false
         env:
-          ACTIONS_STEP_DEBUG: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Debug upload_url from create_release
-        run: |
-          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
-        
-
-      - name: Format upload_url
-        id: format_upload_url
-        run: |
-          CLEANED_URL=$(echo "${{ steps.create_release.outputs.upload_url }}" | sed 's/{.*//')
-          echo "UPLOAD_URL=${CLEANED_URL}" >> $GITHUB_ENV
 
       - name: Debug upload_url
         run: |
-          echo "Upload URL is: $UPLOAD_URL"
-        
+          echo "Upload URL: ${{ steps.create_release.outputs.upload_url }}"
 
       - name: Upload binary to release
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: bin/mkvextracttui
-          asset_name: mkvetui
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bin/mkvextracttui  # Path to your binary
+          asset_name: mkvextracttui      # Name the binary for the release
           asset_content_type: application/octet-stream
