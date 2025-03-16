@@ -19,8 +19,6 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gcc make libncurses5-dev
       - name: Build project
         run: make build
-
-      - uses: actions/checkout@v2
       - uses: CupOfTea696/gh-action-auto-release@v1.0.0
         with:
           title: "Release: $version"
