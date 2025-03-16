@@ -26,6 +26,9 @@ jobs:
           draft: false
           regex: "/^Release: v\\d+\\.\\d+\\.\\d+[a-zA-Z]?$/i"
           changelog: "CHANGELOG"
+        env:
+          ACTIONS_STEP_DEBUG: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload binary to release
         uses: actions/upload-release-asset@v1
@@ -34,7 +37,3 @@ jobs:
           asset_path: bin/mkvextracttui
           asset_name: mkvetui
           asset_content_type: application/octet-stream
-
-        env:
-          ACTIONS_STEP_DEBUG: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
