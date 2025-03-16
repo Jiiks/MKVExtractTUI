@@ -21,9 +21,9 @@ jobs:
       - name: Extract changelog for release notes
         id: extract_changelog
         run: |
-          # Extract changelog section for the current version
           VERSION="v0.1.1a"
-          RELEASE_NOTES=$(sed -n "/## $VERSION/,/^## /p" CHANGELOG | sed '1d;$d')
+          # Extract lines between the current version header and the next header
+          RELEASE_NOTES=$(awk "/## $VERSION/{flag=1;next}/## /{flag=0}flag" CHANGELOG)
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo "${RELEASE_NOTES}" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
