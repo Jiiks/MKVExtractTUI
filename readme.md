@@ -40,22 +40,27 @@ otherwise current working directory is used.
 Command line switches:
 
 `-n | --nogui` `Run guiless and extract all tracks that are tagged to auto check.`
+
 `-a | --all` `auto check all tracks.`
+
 `-q | --quiet` `suppress output.`
+
 `-f | --fastupdate` `Fast update gui where applicable.`
 
 Command line options:
 
 `-i | --input <path>` `Specify input file or directory.`
+
 `-p | --pattern <pattern>` `Specify custom renaming pattern. Default "fn.flags.lang.ext"`
+
 ```bash
 fn = replace with filename.
 flags = replaced with flags such as sdh.
 lang = replaced with language tag such as eng.
 ext = replaced with extension extension such as srt.
 ```
-`-l | --lang <tags>` `Auto check all tracks matching language tags separated with [,]. Default: "en,eng"`
 
+`-l | --lang <tags>` `Auto check all tracks matching language tags separated with [,]. Default: "en,eng"`
 
 Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/MkvExtractTUI`
 
