@@ -60,15 +60,7 @@ int argHandler(int argc, char *argv[]) {
     return 1;
 }
 
-void extractFinished() {
-    state = 2;
-    while (getch() != ERR); // Clear the buffer
-    usleep(10000);
-}
-
-int main(int argc, char *argv[]) {
-    if(argc > 1 && argHandler(argc, argv) == 0) return 0;
-    
+int init() {
     if(system("which mkvinfo > /dev/null 2>&1")) {
         printf("mkvinfo not found/installed\n");
         return 1;
@@ -83,45 +75,16 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Get current directory
-    if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 1;
-    // Custom input directory
-    if(argc > 2)
-        if(!cfgParseArgs(argc, argv)) return 1;
-    //cfgPrintDbg();
+    return 0;
+}
 
-    bool useWd = g_cfg.wd[0] != '\0';
-    // Check that directory or file exists
-    bool singleFile = strstr((useWd ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
-    DIR *dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
-    if(dir == NULL && !singleFile) {
-        perror(useWd ? g_cfg.wd : g_cfg.cwd);
-        return 1;
-    } else if (ENOENT == errno) {
-        perror(useWd ?  g_cfg.wd : g_cfg.cwd);
-        return 1;
-    } else {
-        closedir(dir);
-    }
+void extractFinished() {
+    state = 2;
+    while (getch() != ERR);
+    usleep(10000);
+}
 
-    char title[48];
-    snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
-
-    // Scan and sort files in workind dir or current working dir
-    // Since generally a season is 10+ episodes initialize filelist with capacity of 16 to avoid unnecessary realloc.
-    FileList fl = fsScanDir(useWd ?  g_cfg.wd : g_cfg.cwd, ".mkv", 16, singleFile);
-    if(fl.size <= 0) {
-        printf("No suitable files in: %s\n",useWd ? g_cfg.wd : g_cfg.cwd);
-       // return 0;
-    }
-
-    if(!singleFile)
-        fsSortList(&fl);
-    //int fileCount = fl.size;
-
-    guiMainInit(title, &fl);
-    guiMainUpdate();
-
+int mainLoop() {
     int ch;
     while (1) {
         ch = getch();
@@ -129,11 +92,11 @@ int main(int argc, char *argv[]) {
             usleep(10000);
             continue;
         }
-        if (ch == 27) { // ESC key
+        if (ch == 27) { // ESC
             break;
             guiMainAbortExtract(extractFinished);
             state = 2;
-            continue; // Immediately continue the loop after abort
+            continue;
         }
 
         if(state == 2) {
@@ -175,7 +138,7 @@ int main(int argc, char *argv[]) {
             case KEY_ENTER:
             case 10:
                 state = 1;
-                guiMainExtract(extractFinished); // Start extraction
+                guiMainExtract(extractFinished);
                 break;
             case KEY_BACKSPACE:
                 guiMainBackSpace();
@@ -183,9 +146,55 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    return 0;
+}
+
+int main(int argc, char *argv[]) {
+    if(argc > 1 && argHandler(argc, argv) == 0) return 0;
+    if(init() != 0) return 1;
+
+    // Get current directory
+    if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 1;
+    // Custom input directory
+    if(argc > 2)
+        if(!cfgParseArgs(argc, argv)) return 1;
+    //cfgPrintDbg();
+
+    bool useWd = g_cfg.wd[0] != '\0';
+    // Check that directory or file exists
+    bool singleFile = strstr((useWd ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
+    DIR *dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
+    if(dir == NULL && !singleFile) {
+        perror(useWd ? g_cfg.wd : g_cfg.cwd);
+        return 1;
+    } else if (ENOENT == errno) {
+        perror(useWd ?  g_cfg.wd : g_cfg.cwd);
+        return 1;
+    } else {
+        closedir(dir);
+    }
+
+    char title[48];
+    snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
+
+    // Scan and sort files in workind dir or current working dir
+    // Since generally a season is 10+ episodes initialize filelist with capacity of 16 to avoid unnecessary realloc.
+    FileList fl = fsScanDir(useWd ?  g_cfg.wd : g_cfg.cwd, ".mkv", 16, singleFile);
+    if(fl.size <= 0) {
+        printf("No suitable files in: %s\n",useWd ? g_cfg.wd : g_cfg.cwd);
+    }
+
+    if(!singleFile)
+        fsSortList(&fl);
+
+    guiMainInit(title, &fl);
+    guiMainUpdate();
+
+    int res = mainLoop();
+
     fsCleanup();
     guiMainClean();
     fsFreeList(&fl);
 
-    return 0;
+    return res;
 }
