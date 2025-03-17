@@ -11,11 +11,12 @@
 #include "config.h"
 
 // TODO missing some codecs
-const char *trackCodecNames[5] = {
+const char *trackCodecNames[6] = {
     "srt",
     "ssa",
     "sub",
     "ass",
+    "sup",
     "und"
 };
 
@@ -90,6 +91,7 @@ Track trackParseJson(cJSON *json) {
             else if(strstr(cjCodecIdVs, "S_TEXT/SSA") != NULL) track.Codec = CodecSsa;
             else if(strstr(cjCodecIdVs, "S_VOBSUB") != NULL) track.Codec = CodecVobSub;
             else if(strstr(cjCodecIdVs, "S_TEXT/ASS") != NULL) track.Codec = CodecAss;
+            else if(strstr(cjCodecIdVs, "S_HDMV/PGS") != NULL) track.Codec = CodecPgs;
             else track.Codec = CodecUnknown;
         } else {
             track.Codec = CodecUnknown;
