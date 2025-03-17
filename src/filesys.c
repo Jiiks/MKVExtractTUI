@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <unistd.h>
 #include "config.h"
 
 FileList fsScanDir(const char *path, const char *filter, size_t initialSize, bool singleFile) {
@@ -19,6 +20,10 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
 
     if(singleFile) {
         fileList.files = malloc(fileList.capacity * sizeof(FileInfo));
+        if(access(path, F_OK) != 0) {
+            return fileList;
+        }
+
         char *dirc, *basec, *bname, *dname;
         dirc = strdup(path);
         basec = strdup(path);
