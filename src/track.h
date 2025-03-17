@@ -15,6 +15,7 @@ typedef enum {
     CodecSsa,
     CodecVobSub,
     CodecAss,
+    CodecPgs,
     CodecUnknown,
     trackCodecCount
 } trackCodec;
