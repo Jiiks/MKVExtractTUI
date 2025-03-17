@@ -154,6 +154,7 @@ void guiExtractUpdate(FileList *fl, const int aborted) {
     wrefresh(extractWin);
 }
 
+// TODO sub idx messes up progress
 void guiExtractUpdateAt(const int at, FileInfo *fi, Track *track, const int aborted) {
     if(totalTracksToExtract <= 0) return; // This should never be called with 0 tracks but might as well.
 
