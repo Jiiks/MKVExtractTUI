@@ -5,8 +5,6 @@
 
 Mkv(Sub)ExtractTUI is a terminal-based user interface for extracting subtitles from MKV containers.
 
-- Currently only supports srt subtitles but I'll add support for others momentarily.
-
 Progressbar as of 0.1.1a
 ![gif2](https://github.com/user-attachments/assets/cbb9d6ea-2412-458d-b6b2-14e12c9c0a32)
 
@@ -26,26 +24,53 @@ Progressbar as of 0.1.1a
 Download from releases as binary.
 To launch Mkv(Sub)ExtractTUI, simply run the binary.
 
+Latest version automatically with curl:
+```bash
+curl -s https://api.github.com/repos/Jiiks/MKVExtractTUI/releases/latest | grep "browser_download_url" | cut -d : -f 2,3 | xargs -I {} sh -c 'curl -L -O {}; chmod +x $(basename {})'
+```
+
 Custom input directory:
-`mkvetui -i "path"`
+`mkvetui -i <path>`
 otherwise current working directory is used.
 
 `mkvetui -h` for help.
 
-also can be run guiless with either `guiless=true` in config or `-nogui`
-When done so all subtitles that are configured to be auto checked will be extracted automatically.
+Command line switches:
+
+`-n | --nogui` `Run guiless and extract all tracks that are tagged to auto check.`
+
+`-a | --all` `auto check all tracks.`
+
+`-q | --quiet` `suppress output.`
+
+`-f | --fastupdate` `Fast update gui where applicable.`
+
+Command line options:
+
+`-i | --input <path>` `Specify input file or directory.`
+
+`-p | --pattern <pattern>` `Specify custom renaming pattern. Default "fn.flags.lang.ext"`
+
+```bash
+fn = replaced with filename.
+flags = replaced with flags such as sdh.
+lang = replaced with language tag such as eng.
+ext = replaced with extension extension such as srt.
+```
+
+`-l | --lang <tags>` `Auto check all tracks matching language tags separated with [,]. Default: "en,eng"`
 
 Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/MkvExtractTUI`
 
 ## TODO
-- Most of the command line options :heavy_check_mark:
-- Guiless mode
-- Settings store
-- Support for other than srt
-- Confirm overwrite
-- Extractor screen automatic scrolling
-- Extractor total progress/finished prompt :heavy_check_mark:
-- Multi track extract with tracks 1:1.srt 2:2.srt 3:3.srt
+- [x] Most of the command line options
+- [ ] Guiless mode
+- [ ] Settings store
+- [x] Support for other than srt(still requires some testing)
+- [ ] Confirm overwrite
+- [ ] Extractor screen automatic scrolling
+- [x] Extractor total progress/finished prompt
+- [ ] Multi track extract with tracks 1:1.srt 2:2.srt 3:3.srt
 
 ## Dependencies
 
@@ -59,7 +84,7 @@ You can install the dependencies using your package manager. For example, on Deb
 sudo apt-get install libncurses5-dev mkvtoolnix
 ```
 
-## Bulding
+## Building
 
 Clone the repository and build the project:
 

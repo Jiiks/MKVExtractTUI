@@ -8,12 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "../src/config.h"
 #include "../src/filesys.h"
 
 int main(int argc, char *argv[]) {
-    
+    cfgInit();
     printf("Testing filesys path: %s\n", argv[1]);
-    FileList fl = fsScanDir(argv[1], argv[2], 16);
+    FileList fl = fsScanDir(argv[1], argv[2], 16, false);
 
     printf("Using file: %s\n", fl.files[0].fullPath);
 

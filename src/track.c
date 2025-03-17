@@ -67,47 +67,81 @@ Track trackParseJson(cJSON *json) {
     track.TextSubtitles = false;
 
     strncpy(track.Type, "subtitles\0", 10);
-    //cJSON *id = cJSON_GetObjectItemCaseSensitive(json, "id");
-    track.Idx = cJSON_GetObjectItemCaseSensitive(json, "id")->valueint;
-    cJSON *codec = cJSON_GetObjectItemCaseSensitive(json, "codec");
-    strncpy(track.CodecStr, codec->valuestring, sizeof(track.CodecStr) - 1);
-    track.CodecStr[sizeof(track.CodecStr) - 1] = '\0';
 
     // Props
     cJSON *props = cJSON_GetObjectItemCaseSensitive(json, "properties");
 
-    // Resolve codec
-    cJSON *codec_id = cJSON_GetObjectItemCaseSensitive(props, "codec_id");
-    if(strstr(codec_id->valuestring, "S_TEXT/UTF8") != NULL) track.Codec = CodecSrt;
-    else if(strstr(codec_id->valuestring, "S_TEXT/SSA") != NULL) track.Codec = CodecSsa;
-    else if(strstr(codec_id->valuestring, "S_VOBSUB") != NULL) track.Codec = CodecVobSub;
-    else if(strstr(codec_id->valuestring, "S_TEXT/ASS") != NULL) track.Codec = CodecAss;
-    else track.Codec = CodecUnknown;
+    // Index
+    track.Idx = -1; // Set to -1 in case id fails
+    const cJSON *cjId = cJSON_GetObjectItemCaseSensitive(json, "id");
+    if(cjId != NULL) track.Idx = cjId->valueint;
+    
+    // Codec
+    const cJSON *cjCodec = cJSON_GetObjectItemCaseSensitive(json, "codec");
+    if(cjCodec != NULL) {
+        strncpy(track.CodecStr, cjCodec->valuestring, sizeof(track.CodecStr) - 1);
+        track.CodecStr[sizeof(track.CodecStr) - 1] = '\0';
+
+        // Resolve codec
+        const cJSON *cjCodecId = cJSON_GetObjectItemCaseSensitive(props, "codec_id");
+        if(cjCodecId != NULL) {
+            const char *cjCodecIdVs = cjCodecId->valuestring;
+            if(strstr(cjCodecIdVs, "S_TEXT/UTF8") != NULL) track.Codec = CodecSrt;
+            else if(strstr(cjCodecIdVs, "S_TEXT/SSA") != NULL) track.Codec = CodecSsa;
+            else if(strstr(cjCodecIdVs, "S_VOBSUB") != NULL) track.Codec = CodecVobSub;
+            else if(strstr(cjCodecIdVs, "S_TEXT/ASS") != NULL) track.Codec = CodecAss;
+            else track.Codec = CodecUnknown;
+        } else {
+            track.Codec = CodecUnknown;
+        }
+    }
 
     // Flags
-    track.Default = cJSON_GetObjectItemCaseSensitive(props, "default_track")->valueint;
-    track.Enabled = cJSON_GetObjectItemCaseSensitive(props, "enabled_track")->valueint;
-    track.Forced = cJSON_GetObjectItemCaseSensitive(props, "forced_track")->valueint;
-    track.TextSubtitles = cJSON_GetObjectItemCaseSensitive(props, "text_subtitles")->valueint;
+    const cJSON *cjDefault = cJSON_GetObjectItemCaseSensitive(props, "default_track");
+    const cJSON *cjEnabled = cJSON_GetObjectItemCaseSensitive(props, "enabled_track");
+    const cJSON *cjForced = cJSON_GetObjectItemCaseSensitive(props, "forced_track");
+    const cJSON *cjTextSubtitles = cJSON_GetObjectItemCaseSensitive(props, "text_subtitles");
 
-    cJSON *encoding = cJSON_GetObjectItemCaseSensitive(props, "encoding");
-    strncpy(track.Encoding, encoding->valuestring, sizeof(track.Encoding) - 1);
-    track.Encoding[sizeof(track.Encoding) - 1] = '\0';
+    if(cjDefault != NULL) track.Default = cjDefault->valueint;
+    if(cjEnabled != NULL) track.Enabled = cjEnabled->valueint;
+    if(cjForced != NULL) track.Forced = cjForced->valueint;
+    if(cjTextSubtitles != NULL) track.TextSubtitles = cjTextSubtitles->valueint;
 
-    cJSON *language = cJSON_GetObjectItemCaseSensitive(props, "language");
-    strncpy(track.Language, language->valuestring, sizeof(track.Language) - 1);
-    track.Language[sizeof(track.Language) - 1] = '\0';
+    // Encoding
+    const cJSON *cjEncoding = cJSON_GetObjectItemCaseSensitive(props, "encoding");
+    if(cjEncoding != NULL) {
+        strncpy(track.Encoding, cjEncoding->valuestring, sizeof(track.Encoding) - 1);
+        track.Encoding[sizeof(track.Encoding) - 1] = '\0';
+    } else {
+        strncpy(track.Encoding, "unknown\0", 8);
+    }
 
-    track.Num = cJSON_GetObjectItemCaseSensitive(props, "number")->valueint;
-    
-    cJSON *track_name = cJSON_GetObjectItemCaseSensitive(props, "track_name");
-        if(track_name != NULL) {
-        strncpy(track.Name, track_name->valuestring, sizeof(track.Name) - 1);
+    printf("%zu\n", sizeof(track.Language));
+
+    // Language
+    const cJSON *cjLanguage = cJSON_GetObjectItemCaseSensitive(props, "language");
+    if(cjLanguage != NULL) {
+        strncpy(track.Language, cjLanguage->valuestring, sizeof(track.Language) - 1);
+        track.Language[sizeof(track.Language) - 1] = '\0';
+    } else {
+        strncpy(track.Language, "und\0", 4);
+    }
+
+    // Num
+    track.Num = -1;
+    const cJSON *cjNum = cJSON_GetObjectItemCaseSensitive(props, "number");
+    if(cjNum != NULL) {
+        track.Num = cjNum->valueint;
+    }
+
+    // Name
+    const cJSON *cjTrackName = cJSON_GetObjectItemCaseSensitive(props, "track_name");
+    if(cjTrackName != NULL) {
+        strncpy(track.Name, cjTrackName->valuestring, sizeof(track.Name) - 1);
         track.Name[sizeof(track.Name) - 1] = '\0';
-
-        if(!track.Default) track.Default = checkName(track_name->valuestring, "default");
-        if(!track.Forced) track.Forced = checkName(track_name->valuestring, "forced");
-        if(!track.HearingImpaired) track.HearingImpaired = checkName(track_name->valuestring, "sdh");
+        if(!track.Default) track.Default = checkName(track.Name, "default");
+        if(!track.Forced) track.Forced = checkName(track.Name, "forced");
+        if(!track.HearingImpaired) track.HearingImpaired = checkName(track.Name, "sdh");
     }
 
     // cJSON *uid = cJSON_GetObjectItemCaseSensitive(props, "uid"); we don't care about the uid
@@ -120,10 +154,12 @@ Track trackParseJson(cJSON *json) {
     if(track.HearingImpaired) appendFlag(track.Flags, "sdh.", sizeof(track.Flags));
     if(track.ClosedCaptions) appendFlag(track.Flags, "cc.", sizeof(track.Flags));
     if(track.Commentary) appendFlag(track.Flags, "commentary.", sizeof(track.Flags));
+    track.Flags[sizeof(track.Flags) - 1] = '\0';
 
     strcpy(track.Extension, trackGetCodecName(track.Codec));
     track.Extension[sizeof(track.Extension) - 1] = '\0';
     trackAutoCheck(&track);
+
     return track;
 }
 
@@ -168,12 +204,12 @@ void trackResolveNewName(const char *fileName, Track *track) {
     // Replace "ext" in format with "srt"
     while ((pos = strstr(track->NewName, "ext")) != NULL) {
         memmove(pos + 3, pos + 3, strlen(pos + 3) + 1);
-        memcpy(pos, "srt", 3);
+        memcpy(pos, track->Extension, 3);
     }
 }
 
 void trackPrintDbg(const Track *track) {
-        printf("Id(%d):%d Type:%s Codec:%s[%s] Ext:%s Default:%d Enabled:%d Encoding:%s Forced:%d SDH:%d Lang:%s TS:%d Name:%s Flags:%s\n",
+        printf("Id(%d):%d Type:%s Codec:%s[%s] Ext:%s Default:%d Enabled:%d Encoding:%s Forced:%d SDH:%d Lang:%s TS:%d Name:%s Flags:%s AC:%d\n",
             track->Idx,                         // Id
             track->Num,                         // Num
             track->Type,                        // Type
@@ -188,6 +224,7 @@ void trackPrintDbg(const Track *track) {
             track->Language,                    // Language tag
             track->TextSubtitles,               // Is text subtitles?
             track->Name,                        // Track name
-            track->Flags                        // Flags
+            track->Flags,                       // Flags
+            track->Extract
         );
 }

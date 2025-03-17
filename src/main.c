@@ -13,6 +13,9 @@
 #include "utils.h"
 #include "guimain.h"
 
+#include <dirent.h>
+#include <errno.h>
+
 int state = 0;
 
 // Some command line args
@@ -81,23 +84,34 @@ int main(int argc, char *argv[]) {
     }
 
     // Get current directory
-    if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 0;
+    if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 1;
     // Custom input directory
     if(argc > 2)
         if(!cfgParseArgs(argc, argv)) return 1;
     //cfgPrintDbg();
 
+    bool useWd = g_cfg.wd[0] != '\0';
+    // Check that directory or file exists
+    bool singleFile = strstr((useWd ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
+    DIR *dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
+    if(dir == NULL && !singleFile) {
+        perror(useWd ? g_cfg.wd : g_cfg.cwd);
+        return 1;
+    } else if (ENOENT == errno) {
+        perror(useWd ?  g_cfg.wd : g_cfg.cwd);
+        return 1;
+    } else {
+        closedir(dir);
+    }
+
     char title[48];
     snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
 
-    
-    bool singleFile = strstr((g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
-
     // Scan and sort files in workind dir or current working dir
     // Since generally a season is 10+ episodes initialize filelist with capacity of 16 to avoid unnecessary realloc.
-    FileList fl = fsScanDir(g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd, ".mkv", 16, singleFile);
+    FileList fl = fsScanDir(useWd ?  g_cfg.wd : g_cfg.cwd, ".mkv", 16, singleFile);
     if(fl.size <= 0) {
-        printf("No suitable files in: %s\n", g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd);
+        printf("No suitable files in: %s\n",useWd ? g_cfg.wd : g_cfg.cwd);
        // return 0;
     }
 

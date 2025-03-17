@@ -10,6 +10,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <errno.h>
+#include <unistd.h>
 #include "config.h"
 
 FileList fsScanDir(const char *path, const char *filter, size_t initialSize, bool singleFile) {
@@ -19,6 +21,11 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
 
     if(singleFile) {
         fileList.files = malloc(fileList.capacity * sizeof(FileInfo));
+        fileList.singleFile = true;
+        if(access(path, F_OK) != 0) {
+            return fileList;
+        }
+
         char *dirc, *basec, *bname, *dname;
         dirc = strdup(path);
         basec = strdup(path);
@@ -30,11 +37,16 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
         return fileList;
     }
 
+    fileList.singleFile = false;
+
     struct dirent *entry;
     DIR *dir = opendir(path);
 
     if(dir == NULL) {
         perror("scandir fail");
+        return fileList;
+    } else if (ENOENT == errno) {
+        perror("not a directory");
         return fileList;
     }
 
