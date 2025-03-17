@@ -62,6 +62,9 @@ ext = replaced with extension extension such as srt.
 
 Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/MkvExtractTUI`
 
+## Issues
+- If you have an issue with some file please post the `mkvmerge -J <file>` output to [issues](https://github.com/Jiiks/MKVExtractTUI/issues).
+
 ## TODO
 - [x] Most of the command line options
 - [ ] Guiless mode
@@ -97,7 +100,7 @@ make bar #(build and run)
 
 ## Contributing
 
-Contributions are welcome! If you find a bug or have a feature request, please open an issue on the GitHub repository. For code contributions, please fork the repository and submit a pull request.
+Contributions are welcome! If you find a bug or have a feature request, please open an [issue](https://github.com/Jiiks/MKVExtractTUI/issues) on the GitHub repository. For code contributions, please fork the repository and submit a pull request.
 
 Use either the `dev` or the latest version branch eg. `0.1.2`. Preferably `dev` but it might lag behind the latest version.
 Also if relevant document your changes in `CHANGELOG.md`.
@@ -105,7 +108,7 @@ Generally when changes are made to the latest version branch they're immediately
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+This project is licensed under the [MIT](https://opensource.org/license/mit) License. See the [LICENSE](https://github.com/Jiiks/MKVExtractTUI/blob/master/LICENSE) file for more details.
 
 ## Third party
 
