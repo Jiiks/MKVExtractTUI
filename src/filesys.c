@@ -20,6 +20,7 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
 
     if(singleFile) {
         fileList.files = malloc(fileList.capacity * sizeof(FileInfo));
+        fileList.singleFile = true;
         if(access(path, F_OK) != 0) {
             return fileList;
         }
@@ -34,6 +35,8 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
 
         return fileList;
     }
+
+    fileList.singleFile = false;
 
     struct dirent *entry;
     DIR *dir = opendir(path);

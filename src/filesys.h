@@ -34,6 +34,7 @@ typedef struct {
     FileInfo *files;
     size_t size;
     size_t capacity;
+    bool singleFile;
 } FileList;
 
 /// @brief Scan a directory for files.
