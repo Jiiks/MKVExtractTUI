@@ -54,7 +54,7 @@ Command line options:
 `-p | --pattern <pattern>` `Specify custom renaming pattern. Default "fn.flags.lang.ext"`
 
 ```bash
-fn = replace with filename.
+fn = replaced with filename.
 flags = replaced with flags such as sdh.
 lang = replaced with language tag such as eng.
 ext = replaced with extension extension such as srt.
