@@ -5,6 +5,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "config.h"
 #include <unistd.h>
@@ -84,20 +85,24 @@ int main(int argc, char *argv[]) {
     // Custom input directory
     if(argc > 2)
         if(!cfgParseArgs(argc, argv)) return 1;
-    cfgPrintDbg();
+    //cfgPrintDbg();
 
     char title[48];
     snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
 
+    
+    bool singleFile = strstr((g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
+
     // Scan and sort files in workind dir or current working dir
     // Since generally a season is 10+ episodes initialize filelist with capacity of 16 to avoid unnecessary realloc.
-    FileList fl = fsScanDir(g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd, ".mkv", 16);
+    FileList fl = fsScanDir(g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd, ".mkv", 16, singleFile);
     if(fl.size <= 0) {
         printf("No suitable files in: %s\n", g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd);
        // return 0;
     }
 
-    fsSortList(&fl);
+    if(!singleFile)
+        fsSortList(&fl);
     //int fileCount = fl.size;
 
     guiMainInit(title, &fl);

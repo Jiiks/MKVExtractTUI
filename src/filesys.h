@@ -40,7 +40,7 @@ typedef struct {
 /// @param path path to scan.
 /// @param filter only return files with specified extension.
 /// @return FileList of files in directory.
-FileList fsScanDir(const char *path, const char *filter, size_t initialSize);
+FileList fsScanDir(const char *path, const char *filter, size_t initialSize, bool singleFile);
 
 void fsSetupTracks(FileInfo *fi, const int trackCount);
 void fsGetTracks(FileInfo *fileInfo);
