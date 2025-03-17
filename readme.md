@@ -52,10 +52,13 @@ Command line options:
 `-p | --pattern <pattern>` `Specify custom renaming pattern. Default "fn.flags.lang.ext"`
 
 ```bash
-fn = replaced with filename.
-flags = replaced with flags such as sdh.
-lang = replaced with language tag such as eng.
-ext = replaced with extension extension such as srt.
+fn     replaced with filename.
+flags  replaced with flags such as sdh.
+lang   replaced with language tag such as eng.
+ext    replaced with extension such as srt.
+
+eg. Some Movie.mkv => Some Movie.default.sdh.eng.srt
+Where the track has default, sdh tags, language is eng and format is srt.
 ```
 
 `-l | --lang <tags>` `Auto check all tracks matching language tags separated with [,]. Default: "en,eng"`
