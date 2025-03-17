@@ -6,17 +6,32 @@
 
 #include "filesys.h"
 #include <stdlib.h>
+#include <libgen.h>
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
 #include "config.h"
 
-FileList fsScanDir(const char *path, const char *filter, size_t initialSize) {
-    struct dirent *entry;
-    DIR *dir = opendir(path);
-
+FileList fsScanDir(const char *path, const char *filter, size_t initialSize, bool singleFile) {
+    if(singleFile) initialSize = 1;
     FileList fileList = { NULL, NULL, 0, initialSize };
     fileList.path = strdup(path);
+
+    if(singleFile) {
+        fileList.files = malloc(fileList.capacity * sizeof(FileInfo));
+        char *dirc, *basec, *bname, *dname;
+        dirc = strdup(path);
+        basec = strdup(path);
+        dname = dirname(dirc);
+        bname = basename(basec);
+       
+        fsAddFile(&fileList, bname, dname);
+
+        return fileList;
+    }
+
+    struct dirent *entry;
+    DIR *dir = opendir(path);
 
     if(dir == NULL) {
         perror("scandir fail");

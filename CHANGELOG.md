@@ -12,6 +12,7 @@
 ## v0.1.3a
 ### Changed
   - Add -f|--fastupdate command line for instantly updating gui.
+  - Support for single file input eg `mkvetui -i "a/b/c.mkv"`
 ### Fixed
   - Multifile progressbar updating.
   - Correct default auto check.
