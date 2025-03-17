@@ -204,7 +204,7 @@ void trackResolveNewName(const char *fileName, Track *track) {
     // Replace "ext" in format with "srt"
     while ((pos = strstr(track->NewName, "ext")) != NULL) {
         memmove(pos + 3, pos + 3, strlen(pos + 3) + 1);
-        memcpy(pos, "srt", 3);
+        memcpy(pos, track->Extension, 3);
     }
 }
 

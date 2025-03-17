@@ -14,6 +14,8 @@
   - Add -f|--fastupdate command line for instantly updating gui.
   - Support for single file input eg `mkvetui -i "a/b/c.mkv"`
   - Check that directory/file exists.
+  - Support for other formats than srt.
 ### Fixed
   - Multifile progressbar updating.
   - Correct default auto check.
+  - Null checks for track parsing.
