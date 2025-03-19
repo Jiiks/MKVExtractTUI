@@ -186,12 +186,14 @@ int main(int argc, char *argv[]) {
     bool useWd = g_cfg.wd[0] != '\0';
     // Check that directory or file exists
     bool singleFile = strstr((useWd ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
-    DIR *dir = NULL;
-
-    dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
-    if(dir == NULL) {
-        perror("Input directory");
-        return 1;
+    if(!singleFile) {
+        DIR *dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
+        if(dir == NULL) {
+            perror("Input directory");
+            return 1;
+        }
+        closedir(dir);
+        dir = NULL;
     }
 
     char title[48];
