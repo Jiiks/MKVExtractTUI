@@ -204,6 +204,11 @@ int main(int argc, char *argv[]) {
         retries++;
     }
 
+    if(retries >= 5 && dir == NULL) {
+        fprintf(stderr, "Failed to open directory: %s - %s \n", useWd ? g_cfg.wd : g_cfg.cwd, strerror(lastErrno));
+        return 1;
+    }
+
     if(dir != NULL) {
         closedir(dir);
         dir = NULL;
