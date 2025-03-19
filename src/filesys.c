@@ -15,9 +15,12 @@
 #include "config.h"
 
 FileList fsScanDir(const char *path, const char *filter, size_t initialSize, bool singleFile) {
-    if(singleFile) initialSize = 1;
-    FileList fileList = { NULL, NULL, 0, initialSize };
+    FileList fileList;
     fileList.path = strdup(path);
+    fileList.files = NULL;
+    fileList.size = 0;
+    fileList.capacity = singleFile ? 1 : initialSize;
+    fileList.singleFile = singleFile;
 
     if(singleFile) {
         fileList.files = malloc(fileList.capacity * sizeof(FileInfo));
@@ -33,11 +36,10 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
         bname = basename(basec);
        
         fsAddFile(&fileList, bname, dname);
-
+        free(dirc);
+        free(basec);
         return fileList;
     }
-
-    fileList.singleFile = false;
 
     struct dirent *entry;
     DIR *dir = opendir(path);
@@ -49,7 +51,7 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
         perror("not a directory");
         return fileList;
     }
-
+    
     fileList.files = malloc(fileList.capacity * sizeof(FileInfo));
 
     while((entry = readdir(dir))) {

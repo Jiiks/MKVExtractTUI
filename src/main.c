@@ -186,15 +186,29 @@ int main(int argc, char *argv[]) {
     bool useWd = g_cfg.wd[0] != '\0';
     // Check that directory or file exists
     bool singleFile = strstr((useWd ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
-    DIR *dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
-    if(dir == NULL && !singleFile) {
-        perror(useWd ? g_cfg.wd : g_cfg.cwd);
-        return 1;
-    } else if (ENOENT == errno) {
-        perror(useWd ?  g_cfg.wd : g_cfg.cwd);
-        return 1;
-    } else {
+    DIR *dir = NULL;
+    int retries = 0;
+    int lastErrno = 0; 
+    while(retries < 5) {
+        dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
+        if(dir == NULL && !singleFile) {
+            lastErrno = errno;
+        } else if (ENOENT == errno) {
+            lastErrno = errno;
+        } else {
+            closedir(dir);
+            dir = NULL;
+            break;
+        }
+        mssleep(1000);
+        retries++;
+    }
+
+    if(dir != NULL) {
         closedir(dir);
+        dir = NULL;
+        fprintf(stderr, "Failed to open directory: %s - %s \n", useWd ? g_cfg.wd : g_cfg.cwd, strerror(lastErrno));
+        return 1;
     }
 
     char title[48];
@@ -203,6 +217,7 @@ int main(int argc, char *argv[]) {
     // Scan and sort files in workind dir or current working dir
     // Since generally a season is 10+ episodes initialize filelist with capacity of 16 to avoid unnecessary realloc.
     FileList fl = fsScanDir(useWd ?  g_cfg.wd : g_cfg.cwd, ".mkv", 16, singleFile);
+
     if(fl.size <= 0) {
         printf("No suitable files in: %s\n",useWd ? g_cfg.wd : g_cfg.cwd);
     }

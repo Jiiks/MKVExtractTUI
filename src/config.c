@@ -17,9 +17,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "cJSON.h"
+#include <sys/stat.h>
+
+bool statFileExists(char *filename) {
+    struct stat buffer;   
+    return (stat (filename, &buffer) == 0);
+}
 
 Config g_cfg;
-
 
 // Reset config to default values
 bool reset() {
@@ -80,11 +85,14 @@ int cfgLoad() {
             return 1;
         }
     }
-    if(access(g_cfg.configPath, F_OK) != 0) {
+    
+    if(!statFileExists(g_cfg.configPath)) {
+        printf("Config file does not exist in %s\n", g_cfg.configPath);
         return cfgSave();
     }
 
     FILE *file = fopen(g_cfg.configPath, "r");
+    setvbuf(file, NULL, _IONBF, 0);
 
     fseek(file, 0, SEEK_END);
     long fSize = ftell(file);
@@ -92,6 +100,8 @@ int cfgLoad() {
 
     char *fc = malloc(fSize + 1);
     fread(fc, fSize, 1, file);
+    fflush(file);
+    fsync(fileno(file));
     fclose(file);
 
     fc[fSize] = 0;
@@ -142,8 +152,31 @@ int cfgLoad() {
 }
 
 int cfgSave() {
+    FILE *file = fopen(g_cfg.configPath, "w");
+    if(file == NULL) {
+        perror("Error opening config file for writing.");
+        return 1;
+    }
+    setvbuf(file, NULL, _IONBF, 0);
 
-    return 0;
+    fprintf(file, "{");
+    fprintf(file, "\n    \"auto_check\": \"en,eng\",");
+    fprintf(file, "\n    \"pattern\": \"fn.flags.lang.ext\",");
+    fprintf(file, "\n    \"no_gui\": false,");
+    fprintf(file, "\n    \"quiet\": false,");
+    fprintf(file, "\n    \"auto_check_all\": false,");
+    fprintf(file, "\n    \"fast_update\": false");
+    fprintf(file, "\n}\n");
+
+    if(file == NULL) {
+        printf("File is null\n");
+        return 1;
+    } else {
+        fflush(file);
+        fsync(fileno(file));
+        fclose(file);
+        return 0;
+    }
 }
 
 bool cfgParseArgs(int argc, char *argv[]) {
