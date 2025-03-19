@@ -46,6 +46,10 @@ void appendFlag(char *flags, const char *append, size_t size) {
 /// @brief Checks if track should be auto checked based on language configs.
 /// @param track Track to check
 void trackAutoCheck(Track *track) {
+    if(g_cfg.autoCheckAll) {
+        track->Extract = true;
+        return;
+    }
     char l[5];
     strncpy(l, track->Language, 3);
     l[3] = ',';

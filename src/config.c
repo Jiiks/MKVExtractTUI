@@ -5,19 +5,27 @@
 */
 
 #define CONFIG_FOLDER "MkvExtractTUI"
-#define CONFIG_FILE "config.cfg"
+#define CONFIG_FILE "config.json"
 
 #include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "cJSON.h"
 
 Config g_cfg;
 
+
 // Reset config to default values
 bool reset() {
-    strcpy(g_cfg.lang, "en,eng,");
-    strcpy(g_cfg.format, "fn.flags.lang.ext");
+    snprintf(g_cfg.autoCheck, sizeof(g_cfg.autoCheck), "en,eng");
+    snprintf(g_cfg.lang, sizeof(g_cfg.lang), "en,eng,");
+    snprintf(g_cfg.format, sizeof(g_cfg.format), "fn.flags.lang.ext");
     g_cfg.noGui = false;
     g_cfg.quiet = false;
     g_cfg.autoCheckAll = false;
@@ -64,6 +72,80 @@ bool cfgInit() {
     return true;
 }
 
+int cfgLoad() {
+    if(access(g_cfg.rootPath, F_OK) == -1) {
+        printf("Config directory does not exist; creating %s\n", g_cfg.rootPath);
+        if(mkdir(g_cfg.rootPath, 0755) == -1) {
+            perror("Error creating directory");
+            return 1;
+        }
+    }
+    if(access(g_cfg.configPath, F_OK) != 0) {
+        return cfgSave();
+    }
+
+    FILE *file = fopen(g_cfg.configPath, "r");
+
+    fseek(file, 0, SEEK_END);
+    long fSize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char *fc = malloc(fSize + 1);
+    fread(fc, fSize, 1, file);
+    fclose(file);
+
+    fc[fSize] = 0;
+
+    cJSON *cjConf = cJSON_Parse(fc);
+
+    const cJSON *cjAutoCheck = cJSON_GetObjectItemCaseSensitive(cjConf, "auto_check");
+    if(cjAutoCheck != NULL) {
+        int len = strlen(cjAutoCheck->valuestring);
+        if(len > sizeof(g_cfg.lang) - 2) {
+            printf("Lang is too long!%s\n", cjAutoCheck->valuestring);
+            return 1;
+        }
+        strncpy(g_cfg.lang, cjAutoCheck->valuestring, sizeof(g_cfg.lang) - 2);
+        strncpy(g_cfg.autoCheck, cjAutoCheck->valuestring, sizeof(g_cfg.autoCheck) - 2);
+        g_cfg.lang[len] = ','; // add another , for comparison
+        g_cfg.lang[sizeof(g_cfg.lang) - 1] = '\0';
+        g_cfg.autoCheck[sizeof(g_cfg.autoCheck) - 1] = '\0';
+        
+    }
+
+    const cJSON *cjPattern = cJSON_GetObjectItemCaseSensitive(cjConf, "pattern");
+    if(cjPattern != NULL) {
+        int len = strlen(cjPattern->valuestring);
+        if(len > sizeof(g_cfg.format) - 2) {
+            printf("Pattern is too long!%s\n", cjPattern->valuestring);
+            return 1;
+        }
+        strncpy(g_cfg.format, cjPattern->valuestring, sizeof(g_cfg.format) - 1);
+        g_cfg.format[sizeof(g_cfg.format) - 1] = '\0';
+    }
+
+
+    const cJSON *cjNoGui = cJSON_GetObjectItemCaseSensitive(cjConf, "no_gui");
+    if(cjNoGui != NULL) g_cfg.noGui = cjNoGui->valueint;
+    const cJSON *cjQuiet = cJSON_GetObjectItemCaseSensitive(cjConf, "quiet");
+    if(cjQuiet != NULL) g_cfg.quiet = cjQuiet->valueint;
+    const cJSON *cjAutoCheckAll = cJSON_GetObjectItemCaseSensitive(cjConf, "auto_check_all");
+    if(cjAutoCheckAll != NULL) g_cfg.autoCheckAll = cjAutoCheckAll->valueint;
+    const cJSON *cjFastUpdate = cJSON_GetObjectItemCaseSensitive(cjConf, "fast_update");
+    if(cjFastUpdate != NULL) g_cfg.fastUpdate = cjFastUpdate->valueint;
+
+    cJSON_Delete(cjConf);
+
+    free(fc);
+
+    return 0;
+}
+
+int cfgSave() {
+
+    return 0;
+}
+
 bool cfgParseArgs(int argc, char *argv[]) {
     for(int i = 1 ; i < argc ; i++) {
         if(strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--nogui") == 0) {
@@ -102,8 +184,10 @@ bool cfgParseArgs(int argc, char *argv[]) {
                 return false;
             }
             strncpy(g_cfg.lang, argv[i+1], sizeof(g_cfg.lang) - 2);
+            strncpy(g_cfg.autoCheck, argv[i+1], sizeof(g_cfg.autoCheck) - 2);
             g_cfg.lang[strlen(argv[i+1])] = ','; // add another , for comparison
             g_cfg.lang[sizeof(g_cfg.lang) - 1] = '\0';
+            g_cfg.autoCheck[sizeof(g_cfg.autoCheck) - 1] = '\0';
         }
     }
     return true;
@@ -122,3 +206,4 @@ void cfgPrintDbg() {
         g_cfg.wd
     );
 }
+
