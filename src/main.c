@@ -195,6 +195,7 @@ int main(int argc, char *argv[]) {
             lastErrno = errno;
         } else if (ENOENT == errno) {
             lastErrno = errno;
+            closedir(dir);
         } else {
             closedir(dir);
             dir = NULL;
@@ -210,12 +211,12 @@ int main(int argc, char *argv[]) {
     }
 
     if(dir != NULL) {
-        closedir(dir);
         dir = NULL;
         fprintf(stderr, "Failed to open directory: %s - %s \n", useWd ? g_cfg.wd : g_cfg.cwd, strerror(lastErrno));
         return 1;
     }
-
+    
+    dir = NULL;
     char title[48];
     snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
 
