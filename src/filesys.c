@@ -47,9 +47,6 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
     if(dir == NULL) {
         perror("scandir fail");
         return fileList;
-    } else if (ENOENT == errno) {
-        perror("not a directory");
-        return fileList;
     }
     
     fileList.files = malloc(fileList.capacity * sizeof(FileInfo));

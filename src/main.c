@@ -187,36 +187,13 @@ int main(int argc, char *argv[]) {
     // Check that directory or file exists
     bool singleFile = strstr((useWd ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
     DIR *dir = NULL;
-    int retries = 0;
-    int lastErrno = 0; 
-    while(retries < 5) {
-        dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
-        if(dir == NULL && !singleFile) {
-            lastErrno = errno;
-        } else if (ENOENT == errno) {
-            lastErrno = errno;
-            closedir(dir);
-        } else {
-            closedir(dir);
-            dir = NULL;
-            break;
-        }
-        mssleep(1000);
-        retries++;
-    }
 
-    if(retries >= 5 && dir == NULL) {
-        fprintf(stderr, "Failed to open directory: %s - %s \n", useWd ? g_cfg.wd : g_cfg.cwd, strerror(lastErrno));
+    dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
+    if(dir == NULL) {
+        perror("Input directory");
         return 1;
     }
 
-    if(dir != NULL) {
-        dir = NULL;
-        fprintf(stderr, "Failed to open directory: %s - %s \n", useWd ? g_cfg.wd : g_cfg.cwd, strerror(lastErrno));
-        return 1;
-    }
-    
-    dir = NULL;
     char title[48];
     snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
 
