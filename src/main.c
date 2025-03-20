@@ -23,9 +23,9 @@ int argHandler(int argc, char *argv[]) {
     for (int i = 1; i < argc; ++i) {
         if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
             printf("%s%s\n", "MKV(Sub)Extract Terminal UI v", MKVE_VERSION);
-            printf("%s\n", "Check for updates?(Y/n)");
+            printf("%s\n", "Check for updates?(y/N)");
             int c = getchar();
-            if(c == '\n' || c == 'y' || c == 'Y') {
+            if(c == 'y' || c == 'Y') {
                 char command[128];
                 char output[256];
                 snprintf(command, sizeof(command), "curl -s https://api.github.com/repos/Jiiks/MKVExtractTUI/releases/latest | grep \"tag_name\" | cut -d':' -f2 | cut -d'\"' -f2");
