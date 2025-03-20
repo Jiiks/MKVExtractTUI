@@ -23,6 +23,7 @@ void guiSettingsInit() {
     mvwprintw(settingsWin, ++idx, 2, "No Gui:     [%c]", g_cfg.noGui ? 'x' : ' ');
     mvwprintw(settingsWin, ++idx, 2, "Quiet:      [%c]", g_cfg.quiet ? 'x' : ' ');
     mvwprintw(settingsWin, ++idx, 2, "Check all:  [%c]", g_cfg.autoCheckAll ? 'x' : ' ');
+    mvwprintw(settingsWin, ++idx, 2, "Fast Gui:   [%c]", g_cfg.fastUpdate ? 'x' : ' ');
     wrefresh(settingsWin);
 }
 
