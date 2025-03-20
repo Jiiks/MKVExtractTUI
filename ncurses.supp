@@ -1,0 +1,17 @@
+{
+   libncurses
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libncurses.so.6.4
+   ...
+}
+
+{
+   ncurses_init
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   fun:initNcurses
+   ...
+}

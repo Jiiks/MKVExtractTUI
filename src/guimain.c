@@ -7,6 +7,7 @@
 #include "guimain.h"
 #include <signal.h>
 #include <ncurses.h>
+#include "guisettings.h"
 #include "guiextract.h"
 #include "extractor.h"
 
@@ -187,7 +188,11 @@ void guiMainUpdateSideBar() {
     int maxIndex = ctx.sidebarMaxY - 2;
     char text[ctx.sidebarMaxX - 2]; 
     if(ctx.fileList->size <= 0) {
-        mvwprintw(ctx.sidebarPad, 0, 1, "No files found in: \n %s", ctx.fileList->path);
+        if(ctx.fileList->singleFile) {
+            mvwprintw(ctx.sidebarPad, 0, 1, "File not found: \n %s", ctx.fileList->path);
+        } else {
+            mvwprintw(ctx.sidebarPad, 0, 1, "No files found in: \n %s", ctx.fileList->path);
+        }
     } else {
         for(int i = 0 ; i < ctx.fileList->size ; i++) {
             if(ctx.sidebarIdx == i) {
@@ -389,6 +394,12 @@ void extractorCb(FileList *fl, FileInfo *fi, Track *track, int screenIdx, int ab
     guiExtractUpdateAt(screenIdx, fi, track, abort);
 }
 
+void guiMainSettings() {
+    guiSettingsClean();
+    guiSettingsInit();
+    guiSettingsUpdate();
+}
+
 void guiMainExtract(ExtractFinished cb) {
     aborted = 0;
     
@@ -482,11 +493,13 @@ void guiMainAbortExtract(ExtractFinished cb) {
 }
 
 void guiMainBackSpace() {
+    guiSettingsClean();
     guiExtractClean();
     guiMainUpdate();
 }
 
 void guiMainClean() {
+    guiSettingsClean();
     guiExtractClean();
 
     if(ctx.sidebarPad != NULL) {

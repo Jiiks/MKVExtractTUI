@@ -5,12 +5,16 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "config.h"
 #include <unistd.h>
 #include <ncurses.h>
 #include "utils.h"
 #include "guimain.h"
+
+#include <dirent.h>
+#include <errno.h>
 
 int state = 0;
 
@@ -19,6 +23,28 @@ int argHandler(int argc, char *argv[]) {
     for (int i = 1; i < argc; ++i) {
         if(strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
             printf("%s%s\n", "MKV(Sub)Extract Terminal UI v", MKVE_VERSION);
+            printf("%s\n", "Check for updates?(y/N)");
+            int c = getchar();
+            if(c == 'y' || c == 'Y') {
+                char command[128];
+                char output[256];
+                snprintf(command, sizeof(command), "curl -s https://api.github.com/repos/Jiiks/MKVExtractTUI/releases/latest | grep \"tag_name\" | cut -d':' -f2 | cut -d'\"' -f2");
+                FILE *fp;
+                fp = popen(command, "r");
+                if (fp == NULL) {
+                    perror("Error opening pipe");
+                    return 0;
+                }
+                if (fgets(output, sizeof(output), fp) != NULL) {
+                    printf("Current Version: %s Latest version: %s", MKVE_VERSION, output);
+                } else {
+                    fprintf(stderr, "No output from command\n");
+                }
+                if (pclose(fp) == -1) {
+                    perror("Error closing pipe");
+                    return 0;
+                }
+            }
             return 0;
         }
         if(strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-?") == 0) {
@@ -29,6 +55,7 @@ int argHandler(int argc, char *argv[]) {
             printf("  -l, --lang %*c Auto check all tracks matching language tags. Default: \"en,eng\"\n", 13, ' ');
             printf("  -a, --all %*c Auto check all tracks.\n", 14, ' ');
             printf("  -q, --quiet %*c Suppress output.\n", 12, ' ');
+            printf("  -f, --fastupdate %*c Fast update gui.\n", 7, ' ');
 
             printf("\n  --repo %*c Print repository url.\n", 17, ' ');
             printf("  --issues %*c Print issues url.\n", 15, ' ');
@@ -55,15 +82,7 @@ int argHandler(int argc, char *argv[]) {
     return 1;
 }
 
-void extractFinished() {
-    state = 2;
-    while (getch() != ERR); // Clear the buffer
-    usleep(10000);
-}
-
-int main(int argc, char *argv[]) {
-    if(argc > 1 && argHandler(argc, argv) == 0) return 0;
-    
+int init() {
     if(system("which mkvinfo > /dev/null 2>&1")) {
         printf("mkvinfo not found/installed\n");
         return 1;
@@ -78,30 +97,17 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Get current directory
-    if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 0;
-    // Custom input directory
-    if(argc > 2)
-        if(!cfgParseArgs(argc, argv)) return 1;
-    cfgPrintDbg();
+    if(cfgLoad() != 0) return 1;
+    return 0;
+}
 
-    char title[48];
-    snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
+void extractFinished() {
+    state = 2;
+    while (getch() != ERR);
+    usleep(10000);
+}
 
-    // Scan and sort files in workind dir or current working dir
-    // Since generally a season is 10+ episodes initialize filelist with capacity of 16 to avoid unnecessary realloc.
-    FileList fl = fsScanDir(g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd, ".mkv", 16);
-    if(fl.size <= 0) {
-        printf("No suitable files in: %s\n", g_cfg.wd[0] != '\0' ? g_cfg.wd : g_cfg.cwd);
-       // return 0;
-    }
-
-    fsSortList(&fl);
-    //int fileCount = fl.size;
-
-    guiMainInit(title, &fl);
-    guiMainUpdate();
-
+int mainLoop() {
     int ch;
     while (1) {
         ch = getch();
@@ -109,11 +115,19 @@ int main(int argc, char *argv[]) {
             usleep(10000);
             continue;
         }
-        if (ch == 27) { // ESC key
-            break;
+        if (ch == 27) { // ESC
             guiMainAbortExtract(extractFinished);
             state = 2;
-            continue; // Immediately continue the loop after abort
+            continue;
+        }
+
+        if(state == 3) {
+            if(ch == KEY_BACKSPACE) {
+                guiMainBackSpace();
+                state = 0;
+            }
+            usleep(10000);
+            continue;;
         }
 
         if(state == 2) {
@@ -155,17 +169,67 @@ int main(int argc, char *argv[]) {
             case KEY_ENTER:
             case 10:
                 state = 1;
-                guiMainExtract(extractFinished); // Start extraction
+                guiMainExtract(extractFinished);
                 break;
             case KEY_BACKSPACE:
                 guiMainBackSpace();
                 break;
+            case 'o':
+                state = 3;
+                guiMainSettings();
+                break;
         }
     }
+
+    return 0;
+}
+
+int main(int argc, char *argv[]) {
+    if(argc > 1 && argHandler(argc, argv) == 0) return 0;
+    if(init() != 0) return 1;
+
+    // Get current directory
+    if(!utilsGetCwd(g_cfg.cwd, sizeof(g_cfg.cwd))) return 1;
+    // Custom input directory
+    if(argc > 2)
+        if(!cfgParseArgs(argc, argv)) return 1;
+    //cfgPrintDbg();
+    
+    bool useWd = g_cfg.wd[0] != '\0';
+    // Check that directory or file exists
+    bool singleFile = strstr((useWd ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
+    if(!singleFile) {
+        DIR *dir = opendir(useWd ? g_cfg.wd : g_cfg.cwd);
+        if(dir == NULL) {
+            perror("Input directory");
+            return 1;
+        }
+        closedir(dir);
+        dir = NULL;
+    }
+
+    char title[48];
+    snprintf(title, sizeof(title), "%s v%s", MKVE_WINDOW_TITLE, MKVE_VERSION);
+
+    // Scan and sort files in workind dir or current working dir
+    // Since generally a season is 10+ episodes initialize filelist with capacity of 16 to avoid unnecessary realloc.
+    FileList fl = fsScanDir(useWd ?  g_cfg.wd : g_cfg.cwd, ".mkv", 16, singleFile);
+
+    if(fl.size <= 0) {
+        printf("No suitable files in: %s\n",useWd ? g_cfg.wd : g_cfg.cwd);
+    }
+
+    if(!singleFile)
+        fsSortList(&fl);
+
+    guiMainInit(title, &fl);
+    guiMainUpdate();
+
+    int res = mainLoop();
 
     fsCleanup();
     guiMainClean();
     fsFreeList(&fl);
 
-    return 0;
+    return res;
 }
