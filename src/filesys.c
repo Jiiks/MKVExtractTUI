@@ -60,6 +60,16 @@ FileList fsScanDir(const char *path, const char *filter, size_t initialSize, boo
         return fileList;
     }
 
+    for (size_t i = 0; i < fileList.capacity; i++) {
+        fileList.files[i].name = NULL;
+        fileList.files[i].path = NULL;
+        fileList.files[i].fullPath = NULL;
+        fileList.files[i].tracks = NULL;
+        fileList.files[i].trackCount = 0;
+        fileList.files[i].lt = 0;
+        fileList.files[i].selectedIndex = 0;
+    }
+
     while((entry = readdir(dir))) {
         if(entry->d_type != DT_REG) continue;
         const char *ext = strrchr(entry->d_name, '.');
@@ -148,7 +158,6 @@ void fsAddFile(FileList *list, const char *name, const char *path) {
     last->trackCount = 0;
     last->lt = 0;
     last->selectedIndex = 0;
-    last->name = strdup(name);
     last->name = strdup(name);
     if (last->name == NULL) {
         perror("Memory allocation failed for last->name");
