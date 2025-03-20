@@ -27,4 +27,4 @@
 ### Changed
   - Nothing yet
 ### Fixed
-  - Nothing yet
+  - Settings loading.
