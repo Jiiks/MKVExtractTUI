@@ -18,6 +18,7 @@
   - HDMV/PGS support
   - Config file save/load
   - Update check
+  - Base for settings window (no editing in ui yet).
 ### Fixed
   - Multifile progressbar updating.
   - Correct default auto check.
