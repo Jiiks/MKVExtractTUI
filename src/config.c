@@ -91,6 +91,69 @@ int cfgLoad() {
         return cfgSave();
     }
 
+    FILE *file = fopen(g_cfg.configPath, "r");
+    if(!file) {
+        perror("Failed to read config");
+        return 1;
+    }
+
+    char buffer[1024];
+    int len = fread(buffer, 1, sizeof(buffer), file);
+    fclose(file);
+    if(len <= 0) {
+        printf("Failed to read config file!");
+        return 1;
+    }
+
+    cJSON *cjConf = cJSON_Parse(buffer);
+    if(cjConf == NULL) {
+        const char *err = cJSON_GetErrorPtr();
+        if(err != NULL) {
+            printf("Json Error: %s\n", err);
+        }
+        cJSON_Delete(cjConf);
+        return 1;
+    }
+
+    const cJSON *cjAutoCheck = cJSON_GetObjectItemCaseSensitive(cjConf, "auto_check");
+    if(cjAutoCheck != NULL) {
+        int len = strlen(cjAutoCheck->valuestring);
+        if(len > sizeof(g_cfg.lang) - 2) {
+            printf("Lang is too long!%s\n", cjAutoCheck->valuestring);
+            cJSON_Delete(cjConf);
+            return 1;
+        }
+        strncpy(g_cfg.lang, cjAutoCheck->valuestring, sizeof(g_cfg.lang) - 2);
+        strncpy(g_cfg.autoCheck, cjAutoCheck->valuestring, sizeof(g_cfg.autoCheck) - 2);
+        g_cfg.lang[len] = ','; // add another , for comparison
+        g_cfg.lang[sizeof(g_cfg.lang) - 1] = '\0';
+        g_cfg.autoCheck[sizeof(g_cfg.autoCheck) - 1] = '\0';
+    }
+
+    const cJSON *cjPattern = cJSON_GetObjectItemCaseSensitive(cjConf, "pattern");
+    if(cjPattern != NULL) {
+        int len = strlen(cjPattern->valuestring);
+        if(len > sizeof(g_cfg.format) - 2) {
+            printf("Pattern is too long!%s\n", cjPattern->valuestring);
+            cJSON_Delete(cjConf);
+            return 1;
+        }
+        strncpy(g_cfg.format, cjPattern->valuestring, sizeof(g_cfg.format) - 1);
+        g_cfg.format[sizeof(g_cfg.format) - 1] = '\0';
+    }
+
+
+    const cJSON *cjNoGui = cJSON_GetObjectItemCaseSensitive(cjConf, "no_gui");
+    if(cjNoGui != NULL) g_cfg.noGui = cjNoGui->valueint;
+    const cJSON *cjQuiet = cJSON_GetObjectItemCaseSensitive(cjConf, "quiet");
+    if(cjQuiet != NULL) g_cfg.quiet = cjQuiet->valueint;
+    const cJSON *cjAutoCheckAll = cJSON_GetObjectItemCaseSensitive(cjConf, "auto_check_all");
+    if(cjAutoCheckAll != NULL) g_cfg.autoCheckAll = cjAutoCheckAll->valueint;
+    const cJSON *cjFastUpdate = cJSON_GetObjectItemCaseSensitive(cjConf, "fast_update");
+    if(cjFastUpdate != NULL) g_cfg.fastUpdate = cjFastUpdate->valueint;
+
+    cJSON_Delete(cjConf);
+
     return 0;
 }
 
