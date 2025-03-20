@@ -23,3 +23,8 @@
   - Multifile progressbar updating.
   - Correct default auto check.
   - Null checks for track parsing.
+## v0.1.4a
+### Changed
+  - Nothing yet
+### Fixed
+  - Nothing yet
