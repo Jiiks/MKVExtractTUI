@@ -47,6 +47,7 @@ int guiGetMainIndex();
 /// @brief Check selected track
 void guiMainCheck(int mode);
 
+void guiMainSettings();
 void guiMainExtract(ExtractFinished cb);
 void guiMainAbortExtract(ExtractFinished cb);
 

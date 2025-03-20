@@ -116,10 +116,18 @@ int mainLoop() {
             continue;
         }
         if (ch == 27) { // ESC
-            break;
             guiMainAbortExtract(extractFinished);
             state = 2;
             continue;
+        }
+
+        if(state == 3) {
+            if(ch == KEY_BACKSPACE) {
+                guiMainBackSpace();
+                state = 0;
+            }
+            usleep(10000);
+            continue;;
         }
 
         if(state == 2) {
@@ -165,6 +173,10 @@ int mainLoop() {
                 break;
             case KEY_BACKSPACE:
                 guiMainBackSpace();
+                break;
+            case 'o':
+                state = 3;
+                guiMainSettings();
                 break;
         }
     }

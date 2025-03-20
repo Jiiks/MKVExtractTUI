@@ -7,6 +7,7 @@
 #include "guimain.h"
 #include <signal.h>
 #include <ncurses.h>
+#include "guisettings.h"
 #include "guiextract.h"
 #include "extractor.h"
 
@@ -393,6 +394,12 @@ void extractorCb(FileList *fl, FileInfo *fi, Track *track, int screenIdx, int ab
     guiExtractUpdateAt(screenIdx, fi, track, abort);
 }
 
+void guiMainSettings() {
+    guiSettingsClean();
+    guiSettingsInit();
+    guiSettingsUpdate();
+}
+
 void guiMainExtract(ExtractFinished cb) {
     aborted = 0;
     
@@ -486,11 +493,13 @@ void guiMainAbortExtract(ExtractFinished cb) {
 }
 
 void guiMainBackSpace() {
+    guiSettingsClean();
     guiExtractClean();
     guiMainUpdate();
 }
 
 void guiMainClean() {
+    guiSettingsClean();
     guiExtractClean();
 
     if(ctx.sidebarPad != NULL) {
