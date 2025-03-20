@@ -46,6 +46,9 @@ reset:
 valgrind: 
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./bin/mkvetui -i $(TEST_PATH)
 
+valgrind-supp: 
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --suppressions=ncurses.supp --log-file=valgrind-out.txt ./bin/mkvetui -i $(TEST_PATH)
+
 TESTDIR = tests
 TESTSRC = $(filter-out $(SRCDIR)/main.c, $(wildcard $(SRCDIR)/*.c))
 TESTOBJ = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(TESTSRC))

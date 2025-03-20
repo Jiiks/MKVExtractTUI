@@ -16,6 +16,8 @@
   - Check that directory/file exists.
   - Support for other formats than srt.
   - HDMV/PGS support
+  - Config file save/load
+  - Update check
 ### Fixed
   - Multifile progressbar updating.
   - Correct default auto check.

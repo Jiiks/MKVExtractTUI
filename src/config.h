@@ -44,5 +44,9 @@ extern Config g_cfg;
 bool cfgInit();
 bool cfgParseArgs(int argc, char *argv[]);
 void cfgPrintDbg();
+/// Load config from file
+int cfgLoad();
+/// Save config
+int cfgSave();
 
 #endif // CONFIG_H

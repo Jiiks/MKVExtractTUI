@@ -5,19 +5,32 @@
 */
 
 #define CONFIG_FOLDER "MkvExtractTUI"
-#define CONFIG_FILE "config.cfg"
+#define CONFIG_FILE "config.json"
 
 #include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "cJSON.h"
+#include <sys/stat.h>
+
+bool statFileExists(char *filename) {
+    struct stat buffer;   
+    return (stat (filename, &buffer) == 0);
+}
 
 Config g_cfg;
 
 // Reset config to default values
 bool reset() {
-    strcpy(g_cfg.lang, "en,eng,");
-    strcpy(g_cfg.format, "fn.flags.lang.ext");
+    snprintf(g_cfg.autoCheck, sizeof(g_cfg.autoCheck), "en,eng");
+    snprintf(g_cfg.lang, sizeof(g_cfg.lang), "en,eng,");
+    snprintf(g_cfg.format, sizeof(g_cfg.format), "fn.flags.lang.ext");
     g_cfg.noGui = false;
     g_cfg.quiet = false;
     g_cfg.autoCheckAll = false;
@@ -64,6 +77,50 @@ bool cfgInit() {
     return true;
 }
 
+int cfgLoad() {
+    if(access(g_cfg.rootPath, F_OK) == -1) {
+        printf("Config directory does not exist; creating %s\n", g_cfg.rootPath);
+        if(mkdir(g_cfg.rootPath, 0755) == -1) {
+            perror("Error creating directory");
+            return 1;
+        }
+    }
+    
+    if(!statFileExists(g_cfg.configPath)) {
+        printf("Config file does not exist in %s\n", g_cfg.configPath);
+        return cfgSave();
+    }
+
+    return 0;
+}
+
+int cfgSave() {
+    FILE *file = fopen(g_cfg.configPath, "w");
+    if(file == NULL) {
+        perror("Error opening config file for writing.");
+        return 1;
+    }
+    //setvbuf(file, NULL, _IONBF, 0);
+    fprintf(file, "{");
+    fprintf(file, "\n    \"auto_check\": \"%s\",", g_cfg.autoCheck);
+    fprintf(file, "\n    \"pattern\": \"%s\",", g_cfg.format);
+    fprintf(file, "\n    \"no_gui\": %s,", (g_cfg.noGui ? "true" : "false"));
+    fprintf(file, "\n    \"quiet\": %s,", (g_cfg.quiet ? "true" : "false"));
+    fprintf(file, "\n    \"auto_check_all\": %s,", (g_cfg.autoCheckAll ? "true" : "false"));
+    fprintf(file, "\n    \"fast_update\": %s", (g_cfg.fastUpdate ? "true" : "false"));
+    fprintf(file, "\n}\n");
+
+    if(file == NULL) {
+        printf("File is null\n");
+        return 1;
+    } else {
+        fflush(file);
+        fsync(fileno(file));
+        fclose(file);
+        return 0;
+    }
+}
+
 bool cfgParseArgs(int argc, char *argv[]) {
     for(int i = 1 ; i < argc ; i++) {
         if(strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--nogui") == 0) {
@@ -102,8 +159,10 @@ bool cfgParseArgs(int argc, char *argv[]) {
                 return false;
             }
             strncpy(g_cfg.lang, argv[i+1], sizeof(g_cfg.lang) - 2);
+            strncpy(g_cfg.autoCheck, argv[i+1], sizeof(g_cfg.autoCheck) - 2);
             g_cfg.lang[strlen(argv[i+1])] = ','; // add another , for comparison
             g_cfg.lang[sizeof(g_cfg.lang) - 1] = '\0';
+            g_cfg.autoCheck[sizeof(g_cfg.autoCheck) - 1] = '\0';
         }
     }
     return true;
@@ -122,3 +181,4 @@ void cfgPrintDbg() {
         g_cfg.wd
     );
 }
+
