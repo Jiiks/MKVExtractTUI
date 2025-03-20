@@ -71,7 +71,7 @@ Settings are located in `/home/user/.config/MkvExtractTUI`or`XDG_CONFIG_HOME/Mkv
 ## TODO
 - [x] Most of the command line options
 - [ ] Guiless mode
-- [ ] Settings store
+- [x] Settings store
 - [x] Support for other than srt(still requires some testing)
 - [ ] Confirm overwrite
 - [ ] Extractor screen automatic scrolling
