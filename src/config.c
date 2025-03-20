@@ -92,27 +92,27 @@ int cfgLoad() {
     }
 
     FILE *file = fopen(g_cfg.configPath, "r");
-    setvbuf(file, NULL, _IONBF, 0);
 
-    fseek(file, 0, SEEK_END);
-    long fSize = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    char *fc = malloc(fSize + 1);
-    fread(fc, fSize, 1, file);
-    fflush(file);
-    fsync(fileno(file));
+    char buffer[1024];
+    int len = fread(buffer, 1, sizeof(buffer), file);
     fclose(file);
 
-    fc[fSize] = 0;
-
-    cJSON *cjConf = cJSON_Parse(fc);
+    cJSON *cjConf = cJSON_Parse(buffer);
+    if(cjConf == NULL) {
+        const char *err = cJSON_GetErrorPtr();
+        if(err != NULL) {
+            printf("Json Error: %s\n", err);
+        }
+        cJSON_Delete(cjConf);
+        return 1;
+    }
 
     const cJSON *cjAutoCheck = cJSON_GetObjectItemCaseSensitive(cjConf, "auto_check");
     if(cjAutoCheck != NULL) {
         int len = strlen(cjAutoCheck->valuestring);
         if(len > sizeof(g_cfg.lang) - 2) {
             printf("Lang is too long!%s\n", cjAutoCheck->valuestring);
+            cJSON_Delete(cjConf);
             return 1;
         }
         strncpy(g_cfg.lang, cjAutoCheck->valuestring, sizeof(g_cfg.lang) - 2);
@@ -120,7 +120,6 @@ int cfgLoad() {
         g_cfg.lang[len] = ','; // add another , for comparison
         g_cfg.lang[sizeof(g_cfg.lang) - 1] = '\0';
         g_cfg.autoCheck[sizeof(g_cfg.autoCheck) - 1] = '\0';
-        
     }
 
     const cJSON *cjPattern = cJSON_GetObjectItemCaseSensitive(cjConf, "pattern");
@@ -128,6 +127,7 @@ int cfgLoad() {
         int len = strlen(cjPattern->valuestring);
         if(len > sizeof(g_cfg.format) - 2) {
             printf("Pattern is too long!%s\n", cjPattern->valuestring);
+            cJSON_Delete(cjConf);
             return 1;
         }
         strncpy(g_cfg.format, cjPattern->valuestring, sizeof(g_cfg.format) - 1);
@@ -145,9 +145,6 @@ int cfgLoad() {
     if(cjFastUpdate != NULL) g_cfg.fastUpdate = cjFastUpdate->valueint;
 
     cJSON_Delete(cjConf);
-
-    free(fc);
-
     return 0;
 }
 
@@ -157,15 +154,14 @@ int cfgSave() {
         perror("Error opening config file for writing.");
         return 1;
     }
-    setvbuf(file, NULL, _IONBF, 0);
-
+    //setvbuf(file, NULL, _IONBF, 0);
     fprintf(file, "{");
-    fprintf(file, "\n    \"auto_check\": \"en,eng\",");
-    fprintf(file, "\n    \"pattern\": \"fn.flags.lang.ext\",");
-    fprintf(file, "\n    \"no_gui\": false,");
-    fprintf(file, "\n    \"quiet\": false,");
-    fprintf(file, "\n    \"auto_check_all\": false,");
-    fprintf(file, "\n    \"fast_update\": false");
+    fprintf(file, "\n    \"auto_check\": \"%s\",", g_cfg.autoCheck);
+    fprintf(file, "\n    \"pattern\": \"%s\",", g_cfg.format);
+    fprintf(file, "\n    \"no_gui\": %s,", (g_cfg.noGui ? "true" : "false"));
+    fprintf(file, "\n    \"quiet\": %s,", (g_cfg.quiet ? "true" : "false"));
+    fprintf(file, "\n    \"auto_check_all\": %s,", (g_cfg.autoCheckAll ? "true" : "false"));
+    fprintf(file, "\n    \"fast_update\": %s", (g_cfg.fastUpdate ? "true" : "false"));
     fprintf(file, "\n}\n");
 
     if(file == NULL) {

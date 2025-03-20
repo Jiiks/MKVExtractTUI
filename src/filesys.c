@@ -14,42 +14,51 @@
 #include <unistd.h>
 #include "config.h"
 
-FileList fsScanDir(const char *path, const char *filter, size_t initialSize, bool singleFile) {
-    FileList fileList;
-    fileList.path = strdup(path);
-    fileList.files = NULL;
-    fileList.size = 0;
-    fileList.capacity = singleFile ? 1 : initialSize;
-    fileList.singleFile = singleFile;
+FileList fsSingleFile(const char *path, const char *filter) {
+    FileList fileList = { NULL, NULL, 0, 1 };
+    fileList.path = malloc(strlen(path) + 1);
+    strcpy(fileList.path, path);
+    fileList.singleFile = true;
 
-    if(singleFile) {
-        fileList.files = malloc(fileList.capacity * sizeof(FileInfo));
-        fileList.singleFile = true;
-        if(access(path, F_OK) != 0) {
-            return fileList;
-        }
-
-        char *dirc, *basec, *bname, *dname;
-        dirc = strdup(path);
-        basec = strdup(path);
-        dname = dirname(dirc);
-        bname = basename(basec);
-       
-        fsAddFile(&fileList, bname, dname);
-        free(dirc);
-        free(basec);
+    fileList.files = malloc(sizeof(FileInfo));
+    if(access(path, F_OK) != 0) {
         return fileList;
     }
 
+    char *dirc, *basec, *bname, *dname;
+    dirc = strdup(path);
+    basec = strdup(path);
+    dname = dirname(dirc);
+    bname = basename(basec);
+   
+    fsAddFile(&fileList, bname, dname);
+    free(dirc);
+    free(basec);
+    return fileList;
+}
+
+FileList fsScanDir(const char *path, const char *filter, size_t initialSize, bool singleFile) {
+    if(singleFile) return fsSingleFile(path, filter);
+    FileList fileList = { NULL, NULL, 0, initialSize };
+    fileList.singleFile = false;
+
+    fileList.path = malloc(strlen(path) + 1);
+    strcpy(fileList.path, path);
+
     struct dirent *entry;
-    DIR *dir = opendir(path);
+    DIR *dir = opendir(fileList.path);
 
     if(dir == NULL) {
         perror("scandir fail");
         return fileList;
     }
-    
+
     fileList.files = malloc(fileList.capacity * sizeof(FileInfo));
+    if (fileList.files == NULL) {
+        perror("Memory allocation failed for fileList.files");
+        closedir(dir);
+        return fileList;
+    }
 
     while((entry = readdir(dir))) {
         if(entry->d_type != DT_REG) continue;
@@ -123,6 +132,7 @@ cJSON *fsGetTracksJson(FileInfo *fileInfo) {
 }
 
 void fsAddFile(FileList *list, const char *name, const char *path) {
+
     if(list->size == list->capacity) {
         list->capacity *= 2;
         FileInfo *tmp = realloc(list->files, list->capacity * sizeof(FileInfo));
@@ -138,17 +148,28 @@ void fsAddFile(FileList *list, const char *name, const char *path) {
     last->trackCount = 0;
     last->lt = 0;
     last->selectedIndex = 0;
-    if(last->tracks != NULL) {
-        free(last->tracks);
-        last->tracks = NULL;
-    }
     last->name = strdup(name);
+    last->name = strdup(name);
+    if (last->name == NULL) {
+        perror("Memory allocation failed for last->name");
+        return;
+    }
     last->path = strdup(path);
+    if (last->path == NULL) {
+        perror("Memory allocation failed for last->path");
+        free(last->name);
+        return;
+    }
 
     int fpl = strlen(path) + strlen(name) + 2;
     last->fullPath = malloc(fpl * sizeof(char));
+    if (last->fullPath == NULL) {
+        perror("Memory allocation failed for last->fullPath");
+        free(last->name);
+        free(last->path);
+        return;
+    }
     sprintf(last->fullPath, "%s/%s", path, name);
-
     list->size++;
 }
 
@@ -159,15 +180,18 @@ void fsFreeList(FileList *list) {
             FileInfo *file = &list->files[i];
             free(file->name);
             file->name = NULL;
+
             free(file->path);
             file->path = NULL;
+
             free(file->fullPath);
             file->fullPath = NULL;
+
             free(file->tracks);
             file->tracks = NULL;
             file->trackCount = 0;
         }
-    
+
         free(list->files);
         list->files = NULL;
     }
@@ -188,6 +212,4 @@ void fsSortList(FileList *list) {
     qsort(list->files, list->size, sizeof(FileInfo), fsCompareFiByName);
 }
 
-void fsCleanup() {
-
-}
+void fsCleanup(){}

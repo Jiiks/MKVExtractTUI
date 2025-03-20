@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
     if(argc > 2)
         if(!cfgParseArgs(argc, argv)) return 1;
     //cfgPrintDbg();
-
+    
     bool useWd = g_cfg.wd[0] != '\0';
     // Check that directory or file exists
     bool singleFile = strstr((useWd ? g_cfg.wd : g_cfg.cwd), ".mkv") != NULL;
