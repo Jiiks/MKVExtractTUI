@@ -19,3 +19,5 @@ bin/
 obj/
 old/
 changelog.sh
+
+cpp/build
